@@ -22,7 +22,7 @@
     </a>
 
     <h2 class="mt-2 text-xl font-bold text-blue-600">
-        Attendfy
+        ClassSync
     </h2>
 </div>
 

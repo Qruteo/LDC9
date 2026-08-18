@@ -59,6 +59,13 @@ class TeacherScanController extends Controller
         ], 422);
     }
 
+  $classSession = ClassSession::where('schedule_id', $schedule->id)
+    ->where('teacher_id', $teacher->id)
+    ->whereDate('session_date', now()->toDateString())
+    ->where('status', 'ongoing')
+    ->first();
+
+if (!$classSession) {
     $classSession = ClassSession::create([
         'schedule_id' => $schedule->id,
         'teacher_id' => $teacher->id,
@@ -66,6 +73,7 @@ class TeacherScanController extends Controller
         'start_time' => now()->format('H:i:s'),
         'status' => 'ongoing',
     ]);
+}
 
     return response()->json([
         'success' => true,

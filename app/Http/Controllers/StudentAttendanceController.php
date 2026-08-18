@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Attendance;
+use App\Models\ClassSession;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class StudentAttendanceController extends Controller
+{
+    public function store(Request $request, ClassSession $classSession)
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'siswa') {
+            abort(403);
+        }
+
+        $isStudent = $classSession->schedule
+            ->classRoom
+            ->students()
+            ->where('users.id', $user->id)
+            ->exists();
+
+        if (!$isStudent) {
+            abort(403, 'Anda bukan siswa di kelas ini.');
+        }
+
+        $attendance = Attendance::updateOrCreate(
+            [
+                'class_session_id' => $classSession->id,
+                'student_id' => $user->id,
+            ],
+            [
+                'status' => 'present',
+                'attendance_time' => now(),
+            ]
+        );
+
+        return back()->with('success', 'Absensi berhasil dicatat.');
+    }
+}

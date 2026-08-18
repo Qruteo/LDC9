@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
 use App\Models\Schedule;
+use App\Models\ClassSession;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherScanController extends Controller
 {
@@ -14,67 +15,72 @@ class TeacherScanController extends Controller
         return view('teacher.scan');
     }
 
-    public function validateQr(Request $request)
-    {
-        $request->validate([
-            'qr_token' => ['required', 'string'],
-        ]);
+   public function validateQr(Request $request)
+{
+    $request->validate([
+        'qr_token' => 'required|string',
+    ]);
 
-        $classRoom = ClassRoom::where(
-            'qr_token',
-            $request->qr_token
-        )->first();
+    $user = Auth::user();
 
-        if (!$classRoom) {
-            return response()->json([
-                'success' => false,
-                'message' => 'QR Code kelas tidak valid.'
-            ], 404);
-        }
+    $teacher = $user->teacher;
 
-        $user = auth()->user();
-
-        $teacher = $user->teacher;
-
-        if (!$teacher) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Akun ini belum terdaftar sebagai guru.'
-            ], 403);
-        }
-
-        $now = Carbon::now();
-
-        $day = $now->format('l');
-        $time = $now->format('H:i:s');
-
-        $schedule = Schedule::with([
-            'teacher.user',
-            'classRoom',
-            'subject'
-        ])
-        ->where('teacher_id', $teacher->id)
-        ->where('class_id', $classRoom->id)
-        ->where('day', $day)
-        ->whereTime('start_time', '<=', $time)
-        ->whereTime('end_time', '>=', $time)
-        ->first();
-
-        if (!$schedule) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak ada jadwal mengajar untuk kelas ini pada waktu sekarang.'
-            ], 422);
-        }
-
+    if (!$teacher) {
         return response()->json([
-            'success' => true,
-            'message' => 'Jadwal berhasil divalidasi.',
-            'class' => $classRoom->name,
-            'room' => $classRoom->room,
-            'subject' => $schedule->subject->name,
-            'teacher' => $schedule->teacher->user->name,
-            'schedule_id' => $schedule->id,
-        ]);
+            'success' => false,
+            'message' => 'Akun ini belum terhubung dengan data guru.'
+        ], 422);
     }
+
+    $classRoom = ClassRoom::where(
+        'qr_token',
+        $request->qr_token
+    )->first();
+
+    if (!$classRoom) {
+        return response()->json([
+            'success' => false,
+            'message' => 'QR Code kelas tidak valid.'
+        ], 404);
+    }
+
+    $schedule = Schedule::with([
+        'classRoom',
+        'subject'
+    ])
+    ->where('teacher_id', $teacher->id)
+    ->where('class_id', $classRoom->id)
+    ->first();
+
+    if (!$schedule) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Tidak ada jadwal Anda untuk kelas ini.'
+        ], 422);
+    }
+
+    $classSession = ClassSession::create([
+        'schedule_id' => $schedule->id,
+        'teacher_id' => $teacher->id,
+        'session_date' => now()->toDateString(),
+        'start_time' => now()->format('H:i:s'),
+        'status' => 'ongoing',
+    ]);
+
+    return response()->json([
+        'success' => true,
+
+        'teacher' => $user->name,
+
+        'class' => $classRoom->name,
+
+        'room' => $classRoom->room,
+
+        'subject' => $schedule->subject->name,
+
+        'schedule_id' => $schedule->id,
+
+        'session_id' => $classSession->id,
+    ]);
+}
 }

@@ -96,16 +96,16 @@
                             </p>
 
                             <h1 class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
-    {{ $classRoom->name }}
+    {{ $classSession->schedule->classRoom->name }}
 </h1>
 
 <p class="mt-2 text-xs text-gray-400">
-    QR: {{ $classRoom->qr_token }}
+    QR: {{ $classSession->schedule->classRoom->qr_token }}
 </p>
 
-                            <p class="mt-2 text-gray-500 dark:text-gray-400">
-                                Matematika
-                            </p>
+<p class="mt-2 text-gray-500 dark:text-gray-400">
+    {{ $classSession->schedule->subject->name }}
+</p>
 
                         </div>
 
@@ -129,47 +129,50 @@
                 <!-- Session Info -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+    <!-- Date -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
 
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Date
-                        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Date
+        </p>
 
-                        <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
-                            Monday, 17 August 2026
-                        </p>
+        <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
+            {{ \Carbon\Carbon::parse($classSession->session_date)->format('l, d F Y') }}
+        </p>
 
-                    </div>
-
-
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Start Time
-                        </p>
-
-                        <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
-                            08:03
-                        </p>
-
-                    </div>
+    </div>
 
 
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+    <!-- Start Time -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
 
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Classroom
-                        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Start Time
+        </p>
 
-                        <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
-                           {{ $classRoom->name }}
-                        </p>
+        <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
+            {{ $classSession->start_time
+                ? \Carbon\Carbon::parse($classSession->start_time)->format('H:i')
+                : '-' }}
+        </p>
 
-                    </div>
-
-                </div>
+    </div>
 
 
+    <!-- Classroom -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Classroom
+        </p>
+
+        <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">
+            {{ $classSession->schedule->classRoom->name }}
+        </p>
+
+    </div>
+
+</div>
                 <!-- Learning Material -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-6">
 
@@ -280,57 +283,67 @@
 
 
                         <!-- Student -->
-                        <label class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                        <div class="space-y-3">
 
-                            <div class="flex items-center gap-3">
+    @forelse($students as $student)
 
-                                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span class="text-sm font-semibold text-blue-600">
-                                        C
-                                    </span>
-                                </div>
+        <div class="flex items-center justify-between
+                    bg-white dark:bg-gray-800
+                    rounded-xl shadow-sm p-4">
 
-                                <span class="font-medium text-gray-800 dark:text-gray-200">
-                                    Citra
-                                </span>
+            <div class="flex items-center gap-4">
 
-                            </div>
+                <div class="w-10 h-10 rounded-full
+                            bg-blue-100 dark:bg-blue-900/30
+                            flex items-center justify-center">
 
-                            <input
-                                type="checkbox"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            >
-
-                        </label>
-
-
-                        <!-- Student -->
-                        <label class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-
-                            <div class="flex items-center gap-3">
-
-                                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span class="text-sm font-semibold text-blue-600">
-                                        D
-                                    </span>
-                                </div>
-
-                                <span class="font-medium text-gray-800 dark:text-gray-200">
-                                    Dharma
-                                </span>
-
-                            </div>
-
-                            <input
-                                type="checkbox"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            >
-
-                        </label>
-
-                    </div>
+                    <span class="font-bold text-blue-600">
+                        {{ strtoupper(substr($student->name, 0, 1)) }}
+                    </span>
 
                 </div>
+
+                <div>
+                    <p class="font-semibold text-gray-900 dark:text-white">
+                        {{ $student->name }}
+                    </p>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ $student->email }}
+                    </p>
+                </div>
+
+            </div>
+
+            <span class="px-3 py-1 rounded-full
+                         bg-gray-100 dark:bg-gray-700
+                         text-sm text-gray-600 dark:text-gray-300">
+                Not Yet
+            </span>
+
+        </div>
+
+    @empty
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+
+            <div class="text-4xl mb-3">
+                👨‍🎓
+            </div>
+
+            <p class="font-semibold text-gray-900 dark:text-white">
+                No Students
+            </p>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                There are no students registered in this class yet.
+            </p>
+
+        </div>
+
+    @endforelse
+
+</div>
 
 
                 <!-- Notes -->

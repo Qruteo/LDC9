@@ -56,9 +56,9 @@
                                 "Mapel: " + data.subject
                             );
 
-                            window.location.href =
-                                "{{ route('teacher.session') }}?schedule=" +
-                                data.schedule_id;
+                           window.location.href =
+    "{{ route('teacher.session') }}?session=" +
+    data.session_id;
 
                         } else {
 

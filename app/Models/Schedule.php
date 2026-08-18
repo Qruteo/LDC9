@@ -32,4 +32,9 @@ class Schedule extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    public function classSessions()
+{
+    return $this->hasMany(ClassSession::class);
+}
 }

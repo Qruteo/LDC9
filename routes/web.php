@@ -6,6 +6,7 @@ use App\Http\Controllers\TeacherScanController;
 use App\Http\Controllers\TeacherDashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentAttendanceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,8 +23,9 @@ Route::middleware('auth')->group(function () {
     // TEACHER DASHBOARD
     // =========================
 
-    Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])
-        ->name('teacher.dashboard');
+   Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('teacher.dashboard');
 
 
     // =========================
@@ -43,19 +45,23 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/teacher/session', function () {
 
-        $sessionId = request('session');
+    $sessionId = request('session');
 
-        $classSession = \App\Models\ClassSession::with([
-    'schedule.classRoom.students',
-    'schedule.subject',
-    'teacher'
-])->findOrFail($sessionId);
+    $classSession = \App\Models\ClassSession::with([
+        'schedule.classRoom.students',
+        'schedule.subject',
+        'teacher',
+        'attendances'
+    ])->findOrFail($sessionId);
 
-$students = $classSession->schedule->classRoom->students;
+    $students = $classSession->schedule->classRoom->students;
 
-       return view('teacher.session', compact('classSession', 'students'));
+    return view('teacher.session', compact(
+        'classSession',
+        'students'
+    ));
 
-    })->name('teacher.session');
+})->name('teacher.session');
 
 
     // =========================
@@ -73,6 +79,9 @@ $students = $classSession->schedule->classRoom->students;
 
         Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
     ->name('student.dashboard');
+
+    Route::post('/student/attendance/{classSession}', [StudentAttendanceController::class, 'store'])
+    ->name('student.attendance.store');
 });
 
 

@@ -223,63 +223,14 @@
 
                         </div>
 
-                        <span class="text-sm font-medium text-gray-500">
-                            30 Students
-                        </span>
+                       <span class="text-sm font-medium text-gray-500">
+    {{ $students->count() }} Students
+</span>
 
                     </div>
 
 
                     <div class="mt-5 space-y-3">
-
-                        <!-- Student -->
-                        <label class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-
-                            <div class="flex items-center gap-3">
-
-                                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span class="text-sm font-semibold text-blue-600">
-                                        A
-                                    </span>
-                                </div>
-
-                                <span class="font-medium text-gray-800 dark:text-gray-200">
-                                    Andi
-                                </span>
-
-                            </div>
-
-                            <input
-                                type="checkbox"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            >
-
-                        </label>
-
-
-                        <!-- Student -->
-                        <label class="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-
-                            <div class="flex items-center gap-3">
-
-                                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span class="text-sm font-semibold text-blue-600">
-                                        B
-                                    </span>
-                                </div>
-
-                                <span class="font-medium text-gray-800 dark:text-gray-200">
-                                    Budi
-                                </span>
-
-                            </div>
-
-                            <input
-                                type="checkbox"
-                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            >
-
-                        </label>
 
 
                         <!-- Student -->
@@ -287,33 +238,85 @@
 
     @forelse($students as $student)
 
-        <div class="flex items-center justify-between
-                    bg-white dark:bg-gray-800
-                    rounded-xl shadow-sm p-4">
+    @php
+        $attendance = $classSession->attendances
+            ->where('student_id', $student->id)
+            ->first();
+    @endphp
 
-            <div class="flex items-center gap-4">
+    <div class="flex items-center justify-between
+                bg-white dark:bg-gray-800
+                rounded-xl shadow-sm p-4">
 
-                <div class="w-10 h-10 rounded-full
-                            bg-blue-100 dark:bg-blue-900/30
-                            flex items-center justify-center">
+        <div class="flex items-center gap-4">
 
-                    <span class="font-bold text-blue-600">
-                        {{ strtoupper(substr($student->name, 0, 1)) }}
-                    </span>
+            <div class="w-10 h-10 rounded-full
+                        bg-blue-100 dark:bg-blue-900/30
+                        flex items-center justify-center">
 
-                </div>
-
-                <div>
-                    <p class="font-semibold text-gray-900 dark:text-white">
-                        {{ $student->name }}
-                    </p>
-
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        {{ $student->email }}
-                    </p>
-                </div>
+                <span class="font-bold text-blue-600">
+                    {{ strtoupper(substr($student->name, 0, 1)) }}
+                </span>
 
             </div>
+
+            <div>
+                <p class="font-semibold text-gray-900 dark:text-white">
+                    {{ $student->name }}
+                </p>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ $student->email }}
+                </p>
+            </div>
+
+        </div>
+
+        @if($attendance)
+
+            @if($attendance->status === 'present')
+
+                <span class="px-3 py-1 rounded-full
+                             bg-green-100 text-green-700
+                             text-sm font-medium">
+                    Present
+                </span>
+
+            @elseif($attendance->status === 'late')
+
+                <span class="px-3 py-1 rounded-full
+                             bg-yellow-100 text-yellow-700
+                             text-sm font-medium">
+                    Late
+                </span>
+
+            @elseif($attendance->status === 'excused')
+
+                <span class="px-3 py-1 rounded-full
+                             bg-blue-100 text-blue-700
+                             text-sm font-medium">
+                    Excused
+                </span>
+
+            @elseif($attendance->status === 'absent')
+
+                <span class="px-3 py-1 rounded-full
+                             bg-red-100 text-red-700
+                             text-sm font-medium">
+                    Absent
+                </span>
+
+            @else
+
+                <span class="px-3 py-1 rounded-full
+                             bg-gray-100 dark:bg-gray-700
+                             text-sm text-gray-600 dark:text-gray-300">
+                    {{ ucfirst($attendance->status) }}
+                </span>
+
+            @endif
+
+        @else
 
             <span class="px-3 py-1 rounded-full
                          bg-gray-100 dark:bg-gray-700
@@ -321,27 +324,29 @@
                 Not Yet
             </span>
 
+        @endif
+
+    </div>
+
+@empty
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+
+        <div class="text-4xl mb-3">
+            👨‍🎓
         </div>
 
-    @empty
+        <p class="font-semibold text-gray-900 dark:text-white">
+            No Students
+        </p>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            There are no students registered in this class yet.
+        </p>
 
-            <div class="text-4xl mb-3">
-                👨‍🎓
-            </div>
+    </div>
 
-            <p class="font-semibold text-gray-900 dark:text-white">
-                No Students
-            </p>
-
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                There are no students registered in this class yet.
-            </p>
-
-        </div>
-
-    @endforelse
+@endforelse
 
 </div>
 

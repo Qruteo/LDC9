@@ -11,6 +11,10 @@ class TeacherDashboardController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->role !== 'guru') {
+            abort(403, 'Anda tidak memiliki akses ke dashboard guru.');
+        }
+
         $teacher = $user->teacher;
 
         $schedules = collect();

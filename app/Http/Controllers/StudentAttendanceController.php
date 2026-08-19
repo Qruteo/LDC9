@@ -17,6 +17,12 @@ class StudentAttendanceController extends Controller
             abort(403);
         }
 
+        // Pastikan session masih aktif
+        if ($classSession->status !== 'ongoing') {
+            return back()->with('error', 'Session absensi sudah selesai.');
+        }
+
+        // Pastikan siswa memang terdaftar di kelas tersebut
         $isStudent = $classSession->schedule
             ->classRoom
             ->students()
@@ -27,6 +33,8 @@ class StudentAttendanceController extends Controller
             abort(403, 'Anda bukan siswa di kelas ini.');
         }
 
+        // Satu siswa hanya memiliki satu attendance
+        // untuk satu class session
         $attendance = Attendance::updateOrCreate(
             [
                 'class_session_id' => $classSession->id,

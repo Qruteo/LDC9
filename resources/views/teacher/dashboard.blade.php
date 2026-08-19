@@ -4,64 +4,8 @@
 
         <div class="flex">
 
-            <!-- Sidebar -->
-            <aside class="w-64 min-h-screen bg-white dark:bg-gray-800 shadow-md">
+           <x-teacher-sidebar />
 
-                <!-- Logo -->
-                <div class="p-6 border-b dark:border-gray-700">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-bold">✓</span>
-                        </div>
-
-                        <span class="text-xl font-bold text-blue-600">
-                            Attendfy
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <nav class="p-4 space-y-2">
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600 text-white">
-                        <span>🏠</span>
-                        <span>Dashboard</span>
-                    </a>
-
-                   <a
-    href="{{ route('teacher.scan') }}"
-    class="inline-flex items-center px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
->
-    📷 Scan Class QR
-</a>
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-                        <span>📚</span>
-                        <span>My Sessions</span>
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-                        <span>🕐</span>
-                        <span>My Attendance</span>
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-                        <span>📅</span>
-                        <span>Schedule</span>
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-                        <span>👤</span>
-                        <span>Profile</span>
-                    </a>
-
-                </nav>
-
-            </aside>
 
 
             <!-- Main Content -->
@@ -101,6 +45,75 @@
                     </div>
 
                 </div>
+
+                @if($activeSessions->count() > 0)
+
+    <section class="mb-8">
+
+        <div class="flex items-center justify-between mb-4">
+
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                    Current Session
+                </h2>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Your active teaching session
+                </p>
+            </div>
+
+        </div>
+
+        <div class="space-y-4">
+
+            @foreach($activeSessions as $session)
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+
+                    <div class="flex items-center justify-between">
+
+                        <div>
+
+                            <div class="flex items-center gap-3">
+
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                                    {{ $session->schedule->classRoom->name }}
+                                </h3>
+
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                                    Ongoing
+                                </span>
+
+                            </div>
+
+                            <p class="mt-1 text-gray-500 dark:text-gray-400">
+                                {{ $session->schedule->subject->name }}
+                            </p>
+
+                            <p class="mt-1 text-sm text-gray-400">
+                                📍 {{ $session->schedule->classRoom->room }}
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ route('teacher.session') }}?session={{ $session->id }}"
+                            class="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                        >
+                            📚 Open Session
+                        </a>
+
+                    </div>
+
+                </div>
+
+            @endforeach
+
+        </div>
+
+    </section>
+
+@endif
 
 
                 <!-- Today's Schedule -->

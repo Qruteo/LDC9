@@ -3,36 +3,47 @@
 
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
 
-        const qrReader = document.getElementById('qr-reader');
+    const qrReader = document.getElementById('qr-reader');
 
-        if (!qrReader) {
-            console.error('QR reader tidak ditemukan.');
-            return;
+    if (!qrReader) {
+        console.error('QR reader tidak ditemukan.');
+        return;
+    }
+
+    const qrScanner = new Html5Qrcode('qr-reader');
+
+    const config = {
+        fps: 10,
+        qrbox: {
+            width: 220,
+            height: 220
         }
+    };
 
-        const qrScanner = new Html5Qrcode('qr-reader');
+    // Pengaman agar QR hanya diproses satu kali
+    let isProcessing = false;
 
-        const config = {
-            fps: 10,
-            qrbox: {
-                width: 220,
-                height: 220
+    qrScanner.start(
+        { facingMode: 'environment' },
+        config,
+
+        function (decodedText) {
+
+            // Kalau sedang memproses QR, abaikan deteksi berikutnya
+            if (isProcessing) {
+                return;
             }
-        };
 
-        qrScanner.start(
-            { facingMode: 'environment' },
-            config,
+            isProcessing = true;
 
-            function (decodedText) {
+            console.log("QR Code:", decodedText);
 
-                console.log("QR Code:", decodedText);
+            qrScanner.stop()
+                .then(() => {
 
-                qrScanner.stop().then(() => {
-
-                    fetch("{{ route('teacher.scan.validate') }}", {
+                    return fetch("{{ route('teacher.scan.validate') }}", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -42,138 +53,64 @@
                         body: JSON.stringify({
                             qr_token: decodedText
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
+                    });
 
-                        if (data.success) {
+                })
+                .then(response => response.json())
+                .then(data => {
 
-                            alert(
-                                "✅ QR BERHASIL DIVALIDASI!\n\n" +
-                                "Guru: " + data.teacher + "\n" +
-                                "Kelas: " + data.class + "\n" +
-                                "Ruangan: " + data.room + "\n" +
-                                "Mapel: " + data.subject
-                            );
+                    if (data.success) {
 
-                           window.location.href =
-    "{{ route('teacher.session') }}?session=" +
-    data.session_id;
+                        alert(
+                            "✅ QR BERHASIL DIVALIDASI!\n\n" +
+                            "Guru: " + data.teacher + "\n" +
+                            "Kelas: " + data.class + "\n" +
+                            "Ruangan: " + data.room + "\n" +
+                            "Mapel: " + data.subject
+                        );
 
-                        } else {
+                        window.location.href =
+                            "{{ route('teacher.session') }}?session=" +
+                            data.session_id;
 
-                            alert("❌ " + data.message);
+                    } else {
 
-                            window.location.reload();
-                        }
-
-                    })
-                    .catch(error => {
-
-                        console.error(error);
-
-                        alert("Terjadi kesalahan saat memvalidasi QR.");
+                        alert("❌ " + data.message);
 
                         window.location.reload();
 
-                    });
+                    }
 
-                }).catch(error => {
+                })
+                .catch(error => {
 
-                    console.error("Gagal menghentikan scanner:", error);
+                    console.error(error);
+
+                    alert("Terjadi kesalahan saat memvalidasi QR.");
+
+                    window.location.reload();
 
                 });
 
-            },
+        },
 
-            function () {
-                // Scanner sedang mencari QR.
-            }
+        function () {
+            // Scanner sedang mencari QR.
+        }
 
-        ).catch(function (error) {
+    ).catch(function (error) {
 
-            console.error("Tidak dapat mengakses kamera:", error);
-
-        });
+        console.error("Tidak dapat mengakses kamera:", error);
 
     });
+
+});
 </script>
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
 
         <div class="flex">
 
-            <!-- Sidebar -->
-            <aside class="w-64 min-h-screen bg-white dark:bg-gray-800 shadow-md">
-
-                <!-- Logo -->
-                <div class="p-6 border-b dark:border-gray-700">
-                    <div class="flex items-center gap-3">
-
-                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-bold">✓</span>
-                        </div>
-
-                        <span class="text-xl font-bold text-blue-600">
-                            Attendfy
-                        </span>
-
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <nav class="p-4 space-y-2">
-
-                    <a href="{{ route('teacher.dashboard') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>🏠</span>
-                        <span>Dashboard</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600 text-white">
-
-                        <span>📷</span>
-                        <span>Scan QR</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>📚</span>
-                        <span>My Sessions</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>🕐</span>
-                        <span>My Attendance</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>📅</span>
-                        <span>Schedule</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>👤</span>
-                        <span>Profile</span>
-
-                    </a>
-
-                </nav>
-
-            </aside>
+             <x-teacher-sidebar />
 
 
             <!-- Main Content -->

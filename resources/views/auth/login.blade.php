@@ -7,7 +7,7 @@
         </h1>
 
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            Masuk ke sistem Attendfy
+            Masuk ke sistem Classsync
         </p>
 
     </div>

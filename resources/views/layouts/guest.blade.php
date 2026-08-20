@@ -21,9 +21,7 @@
         <x-application-logo class="w-16 h-16 mx-auto text-blue-600" />
     </a>
 
-    <h2 class="mt-2 text-xl font-bold text-blue-600">
-        Attendfy
-    </h2>
+    
 </div>
 
             <div class="w-full sm:max-w-md mt-6 px-8 py-6 bg-white dark:bg-gray-800 shadow-lg overflow-hidden sm:rounded-xl">

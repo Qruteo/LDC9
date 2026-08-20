@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -7,33 +8,40 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Dashboard
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/dashboard', function () {
-
-    if (auth()->user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-
     return view('dashboard');
-
-})->middleware(['auth'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 /*
 |--------------------------------------------------------------------------
-| Admin Dashboard
+| Admin
 |--------------------------------------------------------------------------
 */
 
-Route::get('/admin/dashboard', function () {
-    return view('auth.admin.dashboard');
-})->middleware(['auth'])->name('admin.dashboard');
+Route::middleware('auth')->prefix('admin')->group(function () {
+
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
+
+    Route::get('/siswa', [AdminDashboardController::class, 'siswa'])
+        ->name('admin.siswa');
+
+    Route::get('/guru', [AdminDashboardController::class, 'guru'])
+        ->name('admin.guru');
+
+    Route::get('/kelas', [AdminDashboardController::class, 'kelas'])
+        ->name('admin.kelas');
+
+    Route::get('/mata-pelajaran', [AdminDashboardController::class, 'mataPelajaran'])
+        ->name('admin.mata-pelajaran');
+
+    Route::get('/jadwal', [AdminDashboardController::class, 'jadwal'])
+        ->name('admin.jadwal');
+
+    Route::get('/absensi', [AdminDashboardController::class, 'absensi'])
+        ->name('admin.absensi');
+});
 
 
 /*
@@ -52,7 +60,6 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
-
 });
 
 

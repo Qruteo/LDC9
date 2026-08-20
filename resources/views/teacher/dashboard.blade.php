@@ -15,7 +15,7 @@
                         </div>
 
                         <span class="text-xl font-bold text-blue-600">
-                            Attendfy
+                            ClassSync
                         </span>
                     </div>
                 </div>

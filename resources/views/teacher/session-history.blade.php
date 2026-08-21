@@ -1,198 +1,155 @@
-<x-app-layout>
+@extends('layouts.teacher')
 
-```
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+@section('title', 'Session History | ClassSync')
 
-    <div class="flex">
+@section('content')
 
-    
+<div class="max-w-7xl mx-auto">
 
+    <div class="mb-8">
 
-
-        <!-- =========================
-             CONTENT
-        ========================== -->
-        <main class="flex-1 p-8">
-
-            <div class="mb-8 flex items-center justify-between">
-
-    <div>
-
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-bold text-slate-900">
             Session History
         </h1>
 
-        <p class="mt-2 text-gray-500">
+        <p class="text-slate-500 mt-2">
             View your previous teaching sessions.
         </p>
 
     </div>
 
 
-    <a href="{{ route('teacher.dashboard') }}"
-       class="inline-flex items-center gap-2
-              px-4 py-2
-              bg-blue-600 text-white
-              rounded-lg
-              hover:bg-blue-700
-              transition">
+    <div class="bg-white rounded-2xl
+                border border-slate-200
+                shadow-sm overflow-hidden">
 
-        ← Back to Dashboard
+        <div class="p-6 border-b border-slate-200">
 
-    </a>
+            <h2 class="text-xl font-bold">
+                Teaching Sessions
+            </h2>
 
-</div>
+            <p class="text-sm text-slate-500 mt-1">
+                History of your teaching activities.
+            </p>
 
-            <!-- =========================
-                 SESSION TABLE
-            ========================== -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+        </div>
 
-                <div class="overflow-x-auto">
 
-                    <table class="w-full">
+        <div class="overflow-x-auto">
 
-                        <thead class="bg-gray-50 dark:bg-gray-700">
+            <table class="w-full">
 
-                            <tr>
+                <thead class="bg-slate-50">
 
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Date
-                                </th>
+                    <tr>
 
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Class
-                                </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold">
+                            Class
+                        </th>
 
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Subject
-                                </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold">
+                            Subject
+                        </th>
 
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Start
-                                </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold">
+                            Date
+                        </th>
 
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Status
-                                </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold">
+                            Time
+                        </th>
 
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Action
-                                </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold">
+                            Status
+                        </th>
 
-                            </tr>
+                    </tr>
 
-                        </thead>
+                </thead>
 
 
-                        <tbody class="divide-y dark:divide-gray-700">
+                <tbody class="divide-y divide-slate-100">
 
-                            @forelse($sessions as $session)
+                    <tr class="hover:bg-slate-50">
 
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4">
+                            XI RPL A
+                        </td>
 
-                                    <!-- Date -->
-                                    <td class="px-6 py-4">
+                        <td class="px-6 py-4">
+                            Matematika
+                        </td>
 
-                                        {{ \Carbon\Carbon::parse($session->session_date)->format('d M Y') }}
+                        <td class="px-6 py-4">
+                            20 Aug 2026
+                        </td>
 
-                                    </td>
+                        <td class="px-6 py-4">
+                            08:00 - 09:30
+                        </td>
 
+                        <td class="px-6 py-4">
 
-                                    <!-- Class -->
-                                    <td class="px-6 py-4 font-medium">
+                            <span
+                                class="px-3 py-1
+                                       rounded-full
+                                       bg-green-50
+                                       text-green-600
+                                       text-sm">
 
-                                        {{ $session->schedule->classRoom->name }}
+                                Completed
 
-                                    </td>
+                            </span>
 
+                        </td>
 
-                                    <!-- Subject -->
-                                    <td class="px-6 py-4">
+                    </tr>
 
-                                        {{ $session->schedule->subject->name }}
 
-                                    </td>
+                    <tr class="hover:bg-slate-50">
 
+                        <td class="px-6 py-4">
+                            XI RPL B
+                        </td>
 
-                                    <!-- Start -->
-                                    <td class="px-6 py-4">
+                        <td class="px-6 py-4">
+                            Pemrograman
+                        </td>
 
-                                        {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}
+                        <td class="px-6 py-4">
+                            19 Aug 2026
+                        </td>
 
-                                    </td>
+                        <td class="px-6 py-4">
+                            10:00 - 11:30
+                        </td>
 
+                        <td class="px-6 py-4">
 
-                                    <!-- Status -->
-                                    <td class="px-6 py-4">
+                            <span
+                                class="px-3 py-1
+                                       rounded-full
+                                       bg-green-50
+                                       text-green-600
+                                       text-sm">
 
-                                        @if($session->status === 'ongoing')
+                                Completed
 
-                                            <span class="px-3 py-1 rounded-full
-                                                         text-xs font-semibold
-                                                         bg-green-100 text-green-700">
+                            </span>
 
-                                                Ongoing
+                        </td>
 
-                                            </span>
+                    </tr>
 
-                                        @else
+                </tbody>
 
-                                            <span class="px-3 py-1 rounded-full
-                                                         text-xs font-semibold
-                                                         bg-gray-100 text-gray-700">
+            </table>
 
-                                                {{ ucfirst($session->status) }}
-
-                                            </span>
-
-                                        @endif
-
-                                    </td>
-
-
-                                    <!-- Action -->
-                                    <td class="px-6 py-4">
-
-                                        <a
-                                            href="{{ route('teacher.session', ['session' => $session->id]) }}"
-                                            class="text-blue-600 font-semibold hover:underline"
-                                        >
-                                            View
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-
-                            @empty
-
-                                <tr>
-
-                                    <td colspan="6"
-                                        class="px-6 py-10 text-center text-gray-500">
-
-                                        Belum ada riwayat session.
-
-                                    </td>
-
-                                </tr>
-
-                            @endforelse
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </main>
+        </div>
 
     </div>
 
 </div>
-```
 
-</x-app-layout>
+@endsection

@@ -1,282 +1,224 @@
-<x-app-layout>
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+@extends('layouts.teacher')
 
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+@section('title', 'Scan Class QR')
 
-        const qrReader = document.getElementById('qr-reader');
+@section('page-title', 'Scan Class QR')
 
-        if (!qrReader) {
-            console.error('QR reader tidak ditemukan.');
-            return;
-        }
+@section('content')
 
-        const qrScanner = new Html5Qrcode('qr-reader');
+<div class="max-w-5xl mx-auto">
 
-        const config = {
-            fps: 10,
-            qrbox: {
-                width: 220,
-                height: 220
-            }
-        };
+    <!-- HEADER -->
 
-        qrScanner.start(
-            { facingMode: 'environment' },
-            config,
+    <div class="mb-8">
 
-            function (decodedText) {
+        <h1 class="text-3xl font-bold text-slate-900">
+            Scan Class QR
+        </h1>
 
-                console.log("QR Code:", decodedText);
+        <p class="mt-2 text-slate-500">
+            Scan QR Code kelas untuk memulai atau membuka sesi mengajar.
+        </p>
 
-                qrScanner.stop().then(() => {
+    </div>
 
-                    fetch("{{ route('teacher.scan.validate') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify({
-                            qr_token: decodedText
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
 
-                        if (data.success) {
+    <!-- MAIN QR CARD -->
 
-                            alert(
-                                "✅ QR BERHASIL DIVALIDASI!\n\n" +
-                                "Guru: " + data.teacher + "\n" +
-                                "Kelas: " + data.class + "\n" +
-                                "Ruangan: " + data.room + "\n" +
-                                "Mapel: " + data.subject
-                            );
+    <div class="bg-white rounded-2xl border border-slate-200
+                shadow-sm overflow-hidden">
 
-                           window.location.href =
-    "{{ route('teacher.session') }}?session=" +
-    data.session_id;
+        <!-- CARD HEADER -->
 
-                        } else {
+        <div class="px-6 py-5 border-b border-slate-200">
 
-                            alert("❌ " + data.message);
+            <div class="flex items-center gap-4">
 
-                            window.location.reload();
-                        }
+                <div
+                    class="w-12 h-12 rounded-xl
+                           bg-blue-100
+                           flex items-center justify-center">
 
-                    })
-                    .catch(error => {
+                    <span class="text-2xl">
+                        📷
+                    </span>
 
-                        console.error(error);
-
-                        alert("Terjadi kesalahan saat memvalidasi QR.");
-
-                        window.location.reload();
-
-                    });
-
-                }).catch(error => {
-
-                    console.error("Gagal menghentikan scanner:", error);
-
-                });
-
-            },
-
-            function () {
-                // Scanner sedang mencari QR.
-            }
-
-        ).catch(function (error) {
-
-            console.error("Tidak dapat mengakses kamera:", error);
-
-        });
-
-    });
-</script>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-
-        <div class="flex">
-
-            <!-- Sidebar -->
-            <aside class="w-64 min-h-screen bg-white dark:bg-gray-800 shadow-md">
-
-                <!-- Logo -->
-                <div class="p-6 border-b dark:border-gray-700">
-                    <div class="flex items-center gap-3">
-
-                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-bold">✓</span>
-                        </div>
-
-                        <span class="text-xl font-bold text-blue-600">
-                            Attendfy
-                        </span>
-
-                    </div>
                 </div>
 
-                <!-- Navigation -->
-                <nav class="p-4 space-y-2">
+                <div>
 
-                    <a href="{{ route('teacher.dashboard') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
+                    <h2 class="text-lg font-bold text-slate-900">
+                        Scan QR Code Kelas
+                    </h2>
 
-                        <span>🏠</span>
-                        <span>Dashboard</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600 text-white">
-
-                        <span>📷</span>
-                        <span>Scan QR</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>📚</span>
-                        <span>My Sessions</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>🕐</span>
-                        <span>My Attendance</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>📅</span>
-                        <span>Schedule</span>
-
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700">
-
-                        <span>👤</span>
-                        <span>Profile</span>
-
-                    </a>
-
-                </nav>
-
-            </aside>
-
-
-            <!-- Main Content -->
-            <main class="flex-1 p-8">
-
-                <!-- Header -->
-                <div class="mb-8">
-
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        Scan Class QR
-                    </h1>
-
-                    <p class="mt-2 text-gray-500 dark:text-gray-400">
-                        Scan the QR code displayed in your classroom.
+                    <p class="text-sm text-slate-500">
+                        Arahkan kamera ke QR Code kelas.
                     </p>
 
                 </div>
-
-
-                <!-- Scanner Card -->
-                <div class="max-w-2xl mx-auto">
-
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8">
-
-                        <div class="text-center">
-
-                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                                Scan QR Code
-                            </h2>
-
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                Position the classroom QR code inside the frame.
-                            </p>
-
-                        </div>
-
-
-                       <!-- Scanner Area -->
-<div class="mt-8 flex justify-center">
-
-    <div class="w-full max-w-md">
-
-        <!-- Camera Container -->
-        <div
-            class="relative w-full aspect-square bg-gray-950 rounded-2xl overflow-hidden shadow-lg"
-        >
-
-            <!-- QR Scanner -->
-            <div
-                id="qr-reader"
-                class="w-full h-full"
-            ></div>
 
             </div>
 
         </div>
 
-        <!-- Scanner Instruction -->
-        <div class="mt-5 text-center">
 
-            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Arahkan kamera ke QR Code kelas
-            </p>
+        <!-- SCANNER -->
 
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Pastikan QR Code berada di dalam kotak
-            </p>
+        <div class="p-8">
 
-        </div>
+            <!-- ERROR -->
 
-    </div>
+            @if(session('error'))
 
-</div>
+                <div
+                    class="mb-6 p-4 rounded-xl
+                           bg-red-50 border border-red-200
+                           text-red-700">
 
-<!-- Status -->
-<div class="mt-6 flex justify-center">
+                    {{ session('error') }}
 
-    <div
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-full
-               bg-green-50 dark:bg-green-900/20
-               text-green-700 dark:text-green-400"
-    >
+                </div>
 
-        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-
-        <span class="text-sm font-medium">
-            Camera ready
-        </span>
-
-    </div>
-
-</div>
+            @endif
 
 
-                        <!-- Cancel -->
-                        <div class="mt-6 text-center">
+            <!-- SUCCESS -->
 
-                            <a href="{{ route('teacher.dashboard') }}"
-                               class="inline-flex items-center px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+            @if(session('success'))
 
-                                Cancel
+                <div
+                    class="mb-6 p-4 rounded-xl
+                           bg-green-50 border border-green-200
+                           text-green-700">
 
-                            </a>
+                    {{ session('success') }}
+
+                </div>
+
+            @endif
+
+
+            <!-- CAMERA AREA -->
+
+            <div class="max-w-xl mx-auto">
+
+                <div
+                    id="reader"
+                    class="w-full rounded-2xl
+                           border-2 border-slate-200
+                           overflow-hidden bg-slate-50">
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div
+                    id="scan-status"
+                    class="mt-5 text-center">
+
+                    <div class="inline-flex items-center gap-2
+                                px-4 py-2 rounded-full
+                                bg-blue-50 text-blue-700
+                                text-sm font-medium">
+
+                        <span>
+                            📷
+                        </span>
+
+                        <span>
+                            Menunggu kamera...
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INFORMATION -->
+
+                <div
+                    class="mt-6 p-5 rounded-xl
+                           bg-slate-50 border border-slate-200">
+
+                    <h3 class="font-semibold text-slate-800">
+                        Cara menggunakan QR Scanner
+                    </h3>
+
+                    <div class="mt-4 space-y-3 text-sm text-slate-600">
+
+                        <div class="flex gap-3">
+
+                            <span
+                                class="w-6 h-6 rounded-full
+                                       bg-blue-600 text-white
+                                       flex items-center justify-center
+                                       text-xs font-bold flex-shrink-0">
+
+                                1
+
+                            </span>
+
+                            <p>
+                                Izinkan browser menggunakan kamera.
+                            </p>
+
+                        </div>
+
+
+                        <div class="flex gap-3">
+
+                            <span
+                                class="w-6 h-6 rounded-full
+                                       bg-blue-600 text-white
+                                       flex items-center justify-center
+                                       text-xs font-bold flex-shrink-0">
+
+                                2
+
+                            </span>
+
+                            <p>
+                                Arahkan kamera ke QR Code kelas.
+                            </p>
+
+                        </div>
+
+
+                        <div class="flex gap-3">
+
+                            <span
+                                class="w-6 h-6 rounded-full
+                                       bg-blue-600 text-white
+                                       flex items-center justify-center
+                                       text-xs font-bold flex-shrink-0">
+
+                                3
+
+                            </span>
+
+                            <p>
+                                Tunggu sampai QR berhasil dibaca.
+                            </p>
+
+                        </div>
+
+
+                        <div class="flex gap-3">
+
+                            <span
+                                class="w-6 h-6 rounded-full
+                                       bg-blue-600 text-white
+                                       flex items-center justify-center
+                                       text-xs font-bold flex-shrink-0">
+
+                                4
+
+                            </span>
+
+                            <p>
+                                Kamu akan diarahkan ke sesi kelas.
+                            </p>
 
                         </div>
 
@@ -284,39 +226,345 @@
 
                 </div>
 
-            </main>
+
+                <!-- MANUAL BUTTON -->
+
+                <div class="mt-6 text-center">
+
+                    <a
+                        href="{{ route('teacher.dashboard') }}"
+                        class="inline-flex items-center gap-2
+                               px-5 py-3
+                               rounded-lg
+                               border border-slate-300
+                               text-slate-600
+                               font-medium
+                               hover:bg-slate-50
+                               transition">
+
+                        ← Kembali ke Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
-<style>
-    #qr-reader {
-        border: none !important;
-    }
-
-    #qr-reader video {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-    }
-
-    #qr-reader__scan_region {
-        min-height: 100% !important;
-    }
-
-    #qr-reader__dashboard {
-        padding: 10px !important;
-        text-align: center !important;
-    }
-
-    #qr-reader__dashboard_section {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        gap: 8px !important;
-        flex-wrap: wrap !important;
-    }
-</style>
 
 
-</x-app-layout>
+    <!-- INFO CARDS -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+
+
+        <!-- CARD 1 -->
+
+        <div
+            class="bg-white rounded-xl
+                   border border-slate-200
+                   p-5">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-10 h-10 rounded-lg
+                           bg-blue-100
+                           flex items-center justify-center">
+
+                    📷
+
+                </div>
+
+                <div>
+
+                    <p class="text-sm text-slate-500">
+                        Scanner
+                    </p>
+
+                    <p class="font-semibold text-slate-800">
+                        Camera QR
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CARD 2 -->
+
+        <div
+            class="bg-white rounded-xl
+                   border border-slate-200
+                   p-5">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-10 h-10 rounded-lg
+                           bg-green-100
+                           flex items-center justify-center">
+
+                    ✓
+
+                </div>
+
+                <div>
+
+                    <p class="text-sm text-slate-500">
+                        Session
+                    </p>
+
+                    <p class="font-semibold text-slate-800">
+                        Auto Connect
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CARD 3 -->
+
+        <div
+            class="bg-white rounded-xl
+                   border border-slate-200
+                   p-5">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-10 h-10 rounded-lg
+                           bg-purple-100
+                           flex items-center justify-center">
+
+                    📚
+
+                </div>
+
+                <div>
+
+                    <p class="text-sm text-slate-500">
+                        ClassSync
+                    </p>
+
+                    <p class="font-semibold text-slate-800">
+                        Teaching Session
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- QR SCANNER LIBRARY -->
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const status = document.getElementById('scan-status');
+
+        function setStatus(message, type = 'normal') {
+
+            let classes = '';
+
+            if (type === 'success') {
+
+                classes =
+                    'bg-green-50 text-green-700';
+
+            } else if (type === 'error') {
+
+                classes =
+                    'bg-red-50 text-red-700';
+
+            } else {
+
+                classes =
+                    'bg-blue-50 text-blue-700';
+
+            }
+
+            status.innerHTML = `
+                <div
+                    class="inline-flex items-center gap-2
+                           px-4 py-2 rounded-full
+                           text-sm font-medium
+                           ${classes}">
+
+                    <span>📷</span>
+
+                    <span>${message}</span>
+
+                </div>
+            `;
+
+        }
+
+
+        function onScanSuccess(decodedText) {
+
+            setStatus(
+                'QR berhasil dibaca. Memproses...',
+                'success'
+            );
+
+
+            /*
+             * Hentikan scanner setelah QR berhasil dibaca.
+             */
+
+            if (window.html5QrCode) {
+
+                window.html5QrCode.stop()
+                    .catch(function () {});
+
+            }
+
+
+            /*
+             * Kirim hasil QR ke Laravel.
+             */
+
+            const form = document.createElement('form');
+
+            form.method = 'POST';
+
+            form.action =
+                "{{ route('teacher.scan.validate') }}";
+
+
+            const csrf = document.createElement('input');
+
+            csrf.type = 'hidden';
+
+            csrf.name = '_token';
+
+            csrf.value =
+                "{{ csrf_token() }}";
+
+
+            const qrData = document.createElement('input');
+
+            qrData.type = 'hidden';
+
+            qrData.name = 'qr_data';
+
+            qrData.value = decodedText;
+
+
+            form.appendChild(csrf);
+
+            form.appendChild(qrData);
+
+            document.body.appendChild(form);
+
+            form.submit();
+
+        }
+
+
+        function onScanFailure(error) {
+
+            /*
+             * Jangan tampilkan error setiap frame.
+             * html5-qrcode memang akan memanggil fungsi
+             * ini ketika QR belum terbaca.
+             */
+
+        }
+
+
+        window.html5QrCode =
+            new Html5Qrcode("reader");
+
+
+        const config = {
+
+            fps: 10,
+
+            qrbox: {
+                width: 250,
+                height: 250
+            }
+
+        };
+
+
+        Html5Qrcode.getCameras()
+            .then(function (devices) {
+
+                if (!devices || devices.length === 0) {
+
+                    setStatus(
+                        'Kamera tidak ditemukan.',
+                        'error'
+                    );
+
+                    return;
+
+                }
+
+
+                setStatus(
+                    'Arahkan kamera ke QR Code kelas.'
+                );
+
+
+                window.html5QrCode.start(
+
+                    {
+                        facingMode: "environment"
+                    },
+
+                    config,
+
+                    onScanSuccess,
+
+                    onScanFailure
+
+                ).catch(function (error) {
+
+                    console.error(error);
+
+                    setStatus(
+                        'Kamera tidak dapat digunakan. Pastikan izin kamera diberikan.',
+                        'error'
+                    );
+
+                });
+
+            })
+
+            .catch(function (error) {
+
+                console.error(error);
+
+                setStatus(
+                    'Tidak dapat mengakses kamera.',
+                    'error'
+                );
+
+            });
+
+    });
+
+</script>
+
+@endsection

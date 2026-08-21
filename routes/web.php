@@ -16,14 +16,15 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
 
-    if (auth()->user()->role === 'admin') {
+    $role = auth()->user()->role;
+
+    if ($role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
 
     return view('dashboard');
 
 })->middleware(['auth'])->name('dashboard');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +34,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/admin/dashboard', function () {
     return view('auth.admin.dashboard');
-})->middleware(['auth'])->name('admin.dashboard');
+})->middleware(['auth', 'role:admin'])->name('admin.dashboard');
 
 
 /*

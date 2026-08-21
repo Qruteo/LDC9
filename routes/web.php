@@ -36,7 +36,9 @@ Route::get('/admin/dashboard', function () {
     return view('auth.admin.dashboard');
 })->middleware(['auth', 'role:admin'])->name('admin.dashboard');
 
-
+Route::get('/admin/export', [\App\Http\Controllers\AdminExportController::class, 'export'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.export');
 /*
 |--------------------------------------------------------------------------
 | Profile

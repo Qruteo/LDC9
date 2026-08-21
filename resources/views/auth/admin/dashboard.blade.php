@@ -640,6 +640,11 @@
 
                         <!-- Quick Actions -->
 
+<a href="{{ route('admin.export') }}"
+   class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+    Export Data Excel
+</a>
+
                         <div class="bg-white dark:bg-gray-800
                                     rounded-xl shadow-sm
                                     p-6 lg:col-span-2">

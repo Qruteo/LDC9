@@ -2,44 +2,72 @@
 
 @section('content')
 
-<div>
+    <div>
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">
+                    Rekap Absensi
+                </h2>
 
-    <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-500 mt-1">
+                    Lihat dan kelola rekap kehadiran siswa.
+                </p>
+            </div>
 
-        <div>
-            <h2 class="text-2xl font-bold text-gray-900">
-                Rekap Absensi
-            </h2>
-
-            <p class="text-gray-500 mt-1">
-                Lihat dan kelola rekap kehadiran siswa.
-            </p>
+            <a href="{{ route('admin.export') }}" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg">
+                📊 Export Data
+            </a>
         </div>
 
-        <button
-            class="bg-green-600 hover:bg-green-700
-                   text-white px-5 py-2.5 rounded-lg">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
 
-            📊 Export Data
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Siswa</th>
+                            <th class="px-6 py-4 font-semibold">Tanggal</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 font-semibold">Waktu</th>
+                            <th class="px-6 py-4 font-semibold">Catatan</th>
+                        </tr>
+                    </thead>
 
-        </button>
+                    <tbody class="divide-y">
+                        @forelse ($attendances as $attendance)
+                            <tr>
+                                <td class="px-6 py-4">
+                                    {{ $attendance->student?->name ?? '-' }}
+                                </td>
 
-    </div>
+                                <td class="px-6 py-4">
+                                    {{ $attendance->classSession?->session_date?->format('d/m/Y') ?? '-' }}
+                                </td>
 
+                                <td class="px-6 py-4">
+                                    {{ ucfirst($attendance->status) }}
+                                </td>
 
-    <div class="bg-white rounded-xl shadow-sm
-                border border-gray-100">
+                                <td class="px-6 py-4">
+                                    {{ $attendance->attendance_time?->format('H:i') ?? '-' }}
+                                </td>
 
-        <div class="p-6">
-
-            <p class="text-gray-500">
-                Rekap absensi akan ditampilkan di sini.
-            </p>
+                                <td class="px-6 py-4">
+                                    {{ $attendance->notes ?? '-' }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                    Belum ada data absensi.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
         </div>
-
     </div>
-
-</div>
 
 @endsection

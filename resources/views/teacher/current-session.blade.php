@@ -1,6 +1,5 @@
 <x-app-layout>
 
-```
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
 
     <div class="flex">
@@ -329,6 +328,5 @@
     </div>
 
 </div>
-```
 
 </x-app-layout>

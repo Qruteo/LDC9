@@ -86,7 +86,7 @@
         Register
     </a>
 
-</div>
+</div> 
         </header>
 
         <!-- Main Content Area Grid -->

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
@@ -22,12 +21,12 @@ class ClassRoom extends Model
     ];
 
     public function students()
-{
-    return $this->belongsToMany(
-        User::class,
-        'student_classes',
-        'class_id',
-        'user_id'
-    );
-}
+    {
+        return $this->belongsToMany(
+            User::class,
+            'student_classes',
+            'class_id',
+            'user_id'
+        );
+    }
 }

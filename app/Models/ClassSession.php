@@ -17,6 +17,7 @@ class ClassSession extends Model
         'session_date',
         'start_time',
         'end_time',
+        'expires_at',
         'material',
         'notes',
         'status',
@@ -26,6 +27,7 @@ class ClassSession extends Model
         'session_date' => 'date',
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
+        'expires_at' => 'datetime',
     ];
 
     public function schedule()
@@ -38,10 +40,15 @@ class ClassSession extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-
     public function attendances()
-{
-    return $this->hasMany(Attendance::class, 'class_session_id');
-}
+    {
+        return $this->hasMany(Attendance::class, 'class_session_id');
+    }
 
+    public function isActive(): bool
+    {
+        return $this->status === 'ongoing'
+            && $this->expires_at
+            && now()->lt($this->expires_at);
+    }
 }

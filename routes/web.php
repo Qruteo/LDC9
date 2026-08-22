@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\TeacherSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeacherScanController;
-use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\StudentAttendanceController;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +63,44 @@ Route::get('/admin/export-data', function () {
 Route::get('/admin/riwayat-siswa', function () {
     return view('admin.riwayat-siswa.index');
 })->middleware('auth')->name('admin.riwayat-siswa');
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->prefix('admin')->group(function () {
+
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
+
+    Route::get('/siswa', [AdminDashboardController::class, 'siswa'])
+        ->name('admin.siswa');
+
+    Route::get('/guru', [AdminDashboardController::class, 'guru'])
+        ->name('admin.guru');
+
+    Route::get('/kelas', [AdminDashboardController::class, 'kelas'])
+        ->name('admin.kelas');
+
+    Route::get('/mata-pelajaran', [AdminDashboardController::class, 'mataPelajaran'])
+        ->name('admin.mata-pelajaran');
+
+    Route::get('/jadwal', [AdminDashboardController::class, 'jadwal'])
+        ->name('admin.jadwal');
+
+    Route::get('/absensi', [AdminDashboardController::class, 'absensi'])
+        ->name('admin.absensi');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('auth')->group(function () {
 
@@ -224,3 +264,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 require __DIR__.'/auth.php';
+
+Route::get('/admin/export', [\App\Http\Controllers\AdminExportController::class, 'export'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.export');

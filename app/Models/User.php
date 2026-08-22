@@ -22,4 +22,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function teacher()
+    {
+        return $this->hasOne(\App\Models\Teacher::class);
+    }
 }

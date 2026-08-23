@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('class_sessions', function (Blueprint $table) {
-            $table->timestamp('expires_at')->nullable()->after('end_time');
-        });
+        if (! Schema::hasColumn('class_sessions', 'expires_at')) {
+            Schema::table('class_sessions', function (Blueprint $table) {
+                $table->timestamp('expires_at')->nullable()->after('end_time');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('class_sessions', function (Blueprint $table) {
-            $table->dropColumn('expires_at');
-        });
+        if (Schema::hasColumn('class_sessions', 'expires_at')) {
+            Schema::table('class_sessions', function (Blueprint $table) {
+                $table->dropColumn('expires_at');
+            });
+        }
     }
 };

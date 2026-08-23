@@ -15,7 +15,6 @@ return new class extends Migration
             $table->date('session_date');
             $table->time('start_time');
             $table->time('end_time')->nullable();
-            $table->timestamp('expires_at')->nullable();
             $table->text('material')->nullable();
             $table->text('notes')->nullable();
             $table->enum('status', ['ongoing', 'completed'])->default('ongoing');

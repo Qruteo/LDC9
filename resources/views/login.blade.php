@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Register</title>
+    <title>Login</title>
 
     <style>
         * {
@@ -21,21 +21,22 @@
             background: #f4f6f9;
         }
 
-        .register-box {
+        .login-box {
             width: 400px;
             background: white;
             padding: 35px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.10);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
         }
 
         h2 {
-            text-align: center;
             margin-top: 0;
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         label {
@@ -49,17 +50,22 @@
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
+            font-size: 15px;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            border: 0;
+            border: none;
             border-radius: 8px;
             background: #2563eb;
             color: white;
             font-size: 16px;
             cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
         }
 
         .error {
@@ -70,7 +76,7 @@
             margin-bottom: 15px;
         }
 
-        .login {
+        .register {
             margin-top: 20px;
             text-align: center;
         }
@@ -84,9 +90,9 @@
 
 <body>
 
-<div class="register-box">
+<div class="login-box">
 
-    <h2>Register</h2>
+    <h2>Login</h2>
 
     @if ($errors->any())
         <div class="error">
@@ -94,55 +100,43 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register.process') }}">
+    <form method="POST" action="{{ route('login.process') }}">
         @csrf
 
         <div class="form-group">
-            <label>Nama</label>
-            <input
-                type="text"
-                name="name"
-                value="{{ old('name') }}"
-                required
-            >
-        </div>
+            <label for="email">Email</label>
 
-        <div class="form-group">
-            <label>Email</label>
             <input
+                id="email"
                 type="email"
                 name="email"
                 value="{{ old('email') }}"
+                placeholder="Masukkan email"
                 required
+                autofocus
             >
         </div>
 
         <div class="form-group">
-            <label>Password</label>
+            <label for="password">Password</label>
+
             <input
+                id="password"
                 type="password"
                 name="password"
-                required
-            >
-        </div>
-
-        <div class="form-group">
-            <label>Konfirmasi Password</label>
-            <input
-                type="password"
-                name="password_confirmation"
+                placeholder="Masukkan password"
                 required
             >
         </div>
 
         <button type="submit">
-            Register
+            Login
         </button>
     </form>
 
-    <div class="login">
-        Sudah punya akun?
-        <a href="{{ route('login') }}">Login</a>
+    <div class="register">
+        Belum punya akun?
+        <a href="{{ route('register') }}">Register</a>
     </div>
 
 </div>

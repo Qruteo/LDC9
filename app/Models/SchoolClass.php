@@ -2,24 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ClassRoom extends Model
+class SchoolClass extends Model
 {
-    use HasFactory;
-
     protected $table = 'classes';
 
     protected $fillable = [
         'name',
-        'room',
-        'qr_token',
-        'latitude',
-        'longitude',
     ];
 
-    public function students()
+    public function students(): BelongsToMany
     {
         return $this->belongsToMany(
             User::class,
@@ -29,7 +24,7 @@ class ClassRoom extends Model
         );
     }
 
-    public function schedules()
+    public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class, 'class_id');
     }

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Mata Pelajaran')
+@section('page-title', 'Siswa Kelas')
 
 @section('content')
 
@@ -9,20 +9,22 @@
     <div class="flex justify-between items-center mb-6">
 
         <div>
+
             <h2 class="text-2xl font-bold text-gray-900">
-                Mata Pelajaran
+                Siswa Kelas {{ $classRoom->name }}
             </h2>
 
             <p class="text-gray-500 mt-1">
-                Kelola mata pelajaran ClassSync.
+                Kelola siswa yang terdaftar di kelas ini.
             </p>
+
         </div>
 
-        <a href="{{ route('admin.mata-pelajaran.create') }}"
-           class="bg-blue-600 hover:bg-blue-700
-                  text-white px-5 py-2.5 rounded-lg">
+        <a href="{{ route('admin.kelas') }}"
+           class="bg-gray-200 hover:bg-gray-300
+                  text-gray-700 px-5 py-2.5 rounded-lg">
 
-            + Tambah Mata Pelajaran
+            ← Kembali
 
         </a>
 
@@ -44,6 +46,15 @@
     <div class="bg-white rounded-xl shadow-sm
                 border border-gray-100 overflow-hidden">
 
+        <div class="px-6 py-4 border-b bg-gray-50">
+
+            <h3 class="font-semibold text-gray-900">
+                Daftar Siswa
+            </h3>
+
+        </div>
+
+
         <div class="overflow-x-auto">
 
             <table class="w-full">
@@ -57,7 +68,11 @@
                         </th>
 
                         <th class="text-left px-6 py-4 text-sm">
-                            Nama Mata Pelajaran
+                            Nama Siswa
+                        </th>
+
+                        <th class="text-left px-6 py-4 text-sm">
+                            Email
                         </th>
 
                         <th class="text-left px-6 py-4 text-sm">
@@ -68,9 +83,10 @@
 
                 </thead>
 
+
                 <tbody>
 
-                    @forelse($subjects as $index => $subject)
+                    @forelse($students as $index => $student)
 
                         <tr class="border-b hover:bg-gray-50">
 
@@ -79,37 +95,33 @@
                             </td>
 
                             <td class="px-6 py-4 font-medium">
-                                {{ $subject->name }}
+                                {{ $student->name }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {{ $student->email }}
                             </td>
 
                             <td class="px-6 py-4">
 
-                                <div class="flex items-center gap-3">
+                                <form method="POST"
+                                      action="{{ route(
+                                          'admin.kelas.students.destroy',
+                                          [$classRoom, $student]
+                                      ) }}"
+                                      onsubmit="return confirm('Keluarkan siswa ini dari kelas?')">
 
-                                    <a href="{{ route('admin.mata-pelajaran.edit', $subject) }}"
-                                       class="text-blue-600 hover:underline">
+                                    @csrf
+                                    @method('DELETE')
 
-                                        Edit
+                                    <button type="submit"
+                                            class="text-red-600 hover:underline">
 
-                                    </a>
+                                        Keluarkan
 
-                                    <form method="POST"
-                                          action="{{ route('admin.mata-pelajaran.destroy', $subject) }}"
-                                          onsubmit="return confirm('Hapus mata pelajaran ini?')">
+                                    </button>
 
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="submit"
-                                                class="text-red-600 hover:underline">
-
-                                            Hapus
-
-                                        </button>
-
-                                    </form>
-
-                                </div>
+                                </form>
 
                             </td>
 
@@ -119,10 +131,10 @@
 
                         <tr>
 
-                            <td colspan="3"
+                            <td colspan="4"
                                 class="text-center py-10 text-gray-500">
 
-                                Belum ada data mata pelajaran.
+                                Belum ada siswa di kelas ini.
 
                             </td>
 

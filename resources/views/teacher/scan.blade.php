@@ -464,7 +464,7 @@
 
             qrData.type = 'hidden';
 
-            qrData.name = 'qr_data';
+           qrData.name = 'qr_token';
 
             qrData.value = decodedText;
 

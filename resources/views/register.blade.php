@@ -13,29 +13,36 @@
 
         body {
             margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
         }
 
         .register-box {
-            width: 400px;
+            width: 100%;
+            max-width: 430px;
             background: white;
             padding: 35px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.10);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
         }
 
-        h2 {
+        h1 {
+            margin: 0 0 8px;
             text-align: center;
-            margin-top: 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 25px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         label {
@@ -46,38 +53,56 @@
 
         input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 14px;
             border: 1px solid #ddd;
             border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 5px;
         }
 
         button {
             width: 100%;
-            padding: 12px;
-            border: 0;
+            border: none;
+            padding: 13px;
             border-radius: 8px;
-            background: #2563eb;
+            background: #4f46e5;
             color: white;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .error {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+        button:hover {
+            opacity: .9;
         }
 
-        .login {
-            margin-top: 20px;
+        .login-link {
             text-align: center;
+            margin-top: 20px;
         }
 
-        a {
-            color: #2563eb;
+        .login-link a {
+            color: #4f46e5;
             text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
         }
     </style>
 </head>
@@ -86,21 +111,27 @@
 
 <div class="register-box">
 
-    <h2>Register</h2>
+    <h1>Register</h1>
+
+    <div class="subtitle">
+        Buat akun baru
+    </div>
 
     @if ($errors->any())
-        <div class="error">
+        <div class="alert">
             {{ $errors->first() }}
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register.process') }}">
+    <form action="{{ route('register.process') }}" method="POST">
         @csrf
 
         <div class="form-group">
-            <label>Nama</label>
+            <label for="name">Nama</label>
+
             <input
                 type="text"
+                id="name"
                 name="name"
                 value="{{ old('name') }}"
                 required
@@ -108,9 +139,22 @@
         </div>
 
         <div class="form-group">
-            <label>Email</label>
+            <label for="nis">NIS</label>
+
+            <input
+                type="text"
+                id="nis"
+                name="nis"
+                value="{{ old('nis') }}"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+
             <input
                 type="email"
+                id="email"
                 name="email"
                 value="{{ old('email') }}"
                 required
@@ -118,18 +162,24 @@
         </div>
 
         <div class="form-group">
-            <label>Password</label>
+            <label for="password">Password</label>
+
             <input
                 type="password"
+                id="password"
                 name="password"
                 required
             >
         </div>
 
         <div class="form-group">
-            <label>Konfirmasi Password</label>
+            <label for="password_confirmation">
+                Konfirmasi Password
+            </label>
+
             <input
                 type="password"
+                id="password_confirmation"
                 name="password_confirmation"
                 required
             >
@@ -140,9 +190,11 @@
         </button>
     </form>
 
-    <div class="login">
+    <div class="login-link">
         Sudah punya akun?
-        <a href="{{ route('login') }}">Login</a>
+        <a href="{{ route('login') }}">
+            Login
+        </a>
     </div>
 
 </div>

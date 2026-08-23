@@ -1,208 +1,16 @@
-<x-app-layout>
-
-```
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-
-    <div class="flex">
-
-
-
-
-
-        <!-- =========================
-             CONTENT
-        ========================== -->
-        <main class="flex-1 p-8">
-
-            <div class="mb-8 flex items-center justify-between">
-
-    <div>
-
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            Session History
-        </h1>
-
-        <p class="mt-2 text-gray-500">
-            View your previous teaching sessions.
-        </p>
-
-    </div>
-
-
-    <a href="{{ route('teacher.dashboard') }}"
-       class="inline-flex items-center gap-2
-              px-4 py-2
-              bg-blue-600 text-white
-              rounded-lg
-              hover:bg-blue-700
-              transition">
-
-        ← Back to Dashboard
-
-    </a>
-
-</div>
-
-            <!-- =========================
-                 SESSION TABLE
-            ========================== -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-
-                <div class="overflow-x-auto">
-
-                    <table class="w-full">
-
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-
-                            <tr>
-
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Date
-                                </th>
-
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Class
-                                </th>
-
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Subject
-                                </th>
-
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Start
-                                </th>
-
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Status
-                                </th>
-
-                                <th class="px-6 py-4 text-left text-sm font-semibold">
-                                    Action
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody class="divide-y dark:divide-gray-700">
-
-                            @forelse($sessions as $session)
-
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-
-                                    <!-- Date -->
-                                    <td class="px-6 py-4">
-
-                                        {{ \Carbon\Carbon::parse($session->session_date)->format('d M Y') }}
-
-                                    </td>
-
-
-                                    <!-- Class -->
-                                    <td class="px-6 py-4 font-medium">
-
-                                        {{ $session->schedule->classRoom->name }}
-
-                                    </td>
-
-
-                                    <!-- Subject -->
-                                    <td class="px-6 py-4">
-
-                                        {{ $session->schedule->subject->name }}
-
-                                    </td>
-
-
-                                    <!-- Start -->
-                                    <td class="px-6 py-4">
-
-                                        {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}
-
-                                    </td>
-
-
-                                    <!-- Status -->
-                                    <td class="px-6 py-4">
-
-                                        @if($session->status === 'ongoing')
-
-                                            <span class="px-3 py-1 rounded-full
-                                                         text-xs font-semibold
-                                                         bg-green-100 text-green-700">
-
-                                                Ongoing
-
-                                            </span>
-
-                                        @else
-
-                                            <span class="px-3 py-1 rounded-full
-                                                         text-xs font-semibold
-                                                         bg-gray-100 text-gray-700">
-
-                                                {{ ucfirst($session->status) }}
-
-                                            </span>
-
-                                        @endif
-
-                                    </td>
-
-
-                                    <!-- Action -->
-                                    <td class="px-6 py-4">
-
-                                        <a
-                                            href="{{ route('teacher.session', ['session' => $session->id]) }}"
-                                            class="text-blue-600 font-semibold hover:underline"
-                                        >
-                                            View
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-
-                            @empty
-
-                                <tr>
-
-                                    <td colspan="6"
-                                        class="px-6 py-10 text-center text-gray-500">
-
-                                        Belum ada riwayat session.
-
-                                    </td>
-
-                                </tr>
-
-                            @endforelse
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </main>
-
-    </div>
-
-</div>
-```
-
-</x-app-layout>
 @extends('layouts.teacher')
 
 @section('title', 'Session History | ClassSync')
 
+@section('page-title', 'Session History')
+
 @section('content')
 
 <div class="max-w-7xl mx-auto">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
 
     <div class="mb-8">
 
@@ -210,141 +18,265 @@
             Session History
         </h1>
 
-        <p class="text-slate-500 mt-2">
+        <p class="mt-2 text-slate-500">
             View your previous teaching sessions.
         </p>
 
     </div>
 
 
+    <!-- =========================
+         SESSION HISTORY CARD
+    ========================== -->
+
     <div class="bg-white rounded-2xl
                 border border-slate-200
                 shadow-sm overflow-hidden">
 
-        <div class="p-6 border-b border-slate-200">
+        <div class="px-6 py-5 border-b border-slate-200">
 
-            <h2 class="text-xl font-bold">
+            <h2 class="text-xl font-semibold text-slate-900">
                 Teaching Sessions
             </h2>
 
-            <p class="text-sm text-slate-500 mt-1">
+            <p class="mt-1 text-sm text-slate-500">
                 History of your teaching activities.
             </p>
 
         </div>
 
 
-        <div class="overflow-x-auto">
+        @if(isset($sessions) && $sessions->count())
 
-            <table class="w-full">
+            <div class="overflow-x-auto">
 
-                <thead class="bg-slate-50">
+                <table class="w-full">
 
-                    <tr>
+                    <thead class="bg-slate-50 border-b border-slate-200">
 
-                        <th class="px-6 py-4 text-left text-sm font-semibold">
-                            Class
-                        </th>
+                        <tr>
 
-                        <th class="px-6 py-4 text-left text-sm font-semibold">
-                            Subject
-                        </th>
+                            <th class="px-6 py-4 text-left
+                                       text-xs font-semibold
+                                       text-slate-500 uppercase">
+                                Date
+                            </th>
 
-                        <th class="px-6 py-4 text-left text-sm font-semibold">
-                            Date
-                        </th>
+                            <th class="px-6 py-4 text-left
+                                       text-xs font-semibold
+                                       text-slate-500 uppercase">
+                                Class
+                            </th>
 
-                        <th class="px-6 py-4 text-left text-sm font-semibold">
-                            Time
-                        </th>
+                            <th class="px-6 py-4 text-left
+                                       text-xs font-semibold
+                                       text-slate-500 uppercase">
+                                Subject
+                            </th>
 
-                        <th class="px-6 py-4 text-left text-sm font-semibold">
-                            Status
-                        </th>
+                            <th class="px-6 py-4 text-left
+                                       text-xs font-semibold
+                                       text-slate-500 uppercase">
+                                Start
+                            </th>
 
-                    </tr>
+                            <th class="px-6 py-4 text-left
+                                       text-xs font-semibold
+                                       text-slate-500 uppercase">
+                                Status
+                            </th>
 
-                </thead>
+                            <th class="px-6 py-4 text-right
+                                       text-xs font-semibold
+                                       text-slate-500 uppercase">
+                                Action
+                            </th>
 
+                        </tr>
 
-                <tbody class="divide-y divide-slate-100">
-
-                    <tr class="hover:bg-slate-50">
-
-                        <td class="px-6 py-4">
-                            XI RPL A
-                        </td>
-
-                        <td class="px-6 py-4">
-                            Matematika
-                        </td>
-
-                        <td class="px-6 py-4">
-                            20 Aug 2026
-                        </td>
-
-                        <td class="px-6 py-4">
-                            08:00 - 09:30
-                        </td>
-
-                        <td class="px-6 py-4">
-
-                            <span
-                                class="px-3 py-1
-                                       rounded-full
-                                       bg-green-50
-                                       text-green-600
-                                       text-sm">
-
-                                Completed
-
-                            </span>
-
-                        </td>
-
-                    </tr>
+                    </thead>
 
 
-                    <tr class="hover:bg-slate-50">
+                    <tbody class="divide-y divide-slate-200">
 
-                        <td class="px-6 py-4">
-                            XI RPL B
-                        </td>
+                        @foreach($sessions as $session)
 
-                        <td class="px-6 py-4">
-                            Pemrograman
-                        </td>
+                            <tr class="hover:bg-slate-50 transition">
 
-                        <td class="px-6 py-4">
-                            19 Aug 2026
-                        </td>
+                                <!-- DATE -->
 
-                        <td class="px-6 py-4">
-                            10:00 - 11:30
-                        </td>
+                                <td class="px-6 py-4 text-sm text-slate-700">
 
-                        <td class="px-6 py-4">
+                                    {{ \Carbon\Carbon::parse(
+                                        $session->session_date
+                                    )->format('d M Y') }}
 
-                            <span
-                                class="px-3 py-1
-                                       rounded-full
-                                       bg-green-50
-                                       text-green-600
-                                       text-sm">
+                                </td>
 
-                                Completed
 
-                            </span>
+                                <!-- CLASS -->
 
-                        </td>
+                                <td class="px-6 py-4">
 
-                    </tr>
+                                    <div class="font-medium text-slate-900">
 
-                </tbody>
+                                        {{ $session->schedule->classRoom->name ?? '-' }}
 
-            </table>
+                                    </div>
 
-        </div>
+                                    <div class="text-xs text-slate-500">
+
+                                        {{ $session->schedule->classRoom->room ?? '-' }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- SUBJECT -->
+
+                                <td class="px-6 py-4 text-sm text-slate-700">
+
+                                    {{ $session->schedule->subject->name ?? '-' }}
+
+                                </td>
+
+
+                                <!-- START -->
+
+                                <td class="px-6 py-4 text-sm text-slate-700">
+
+                                    @if($session->start_time)
+
+                                        {{ \Carbon\Carbon::parse(
+                                            $session->start_time
+                                        )->format('H:i') }}
+
+                                    @else
+
+                                        -
+
+                                    @endif
+
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td class="px-6 py-4">
+
+                                    @if($session->status === 'ongoing')
+
+                                        <span class="inline-flex
+                                                     items-center
+                                                     px-3 py-1
+                                                     rounded-full
+                                                     text-xs font-semibold
+                                                     bg-green-100
+                                                     text-green-700">
+
+                                            Ongoing
+
+                                        </span>
+
+                                    @elseif($session->status === 'completed')
+
+                                        <span class="inline-flex
+                                                     items-center
+                                                     px-3 py-1
+                                                     rounded-full
+                                                     text-xs font-semibold
+                                                     bg-blue-100
+                                                     text-blue-700">
+
+                                            Completed
+
+                                        </span>
+
+                                    @elseif($session->status === 'expired')
+
+                                        <span class="inline-flex
+                                                     items-center
+                                                     px-3 py-1
+                                                     rounded-full
+                                                     text-xs font-semibold
+                                                     bg-red-100
+                                                     text-red-700">
+
+                                            Expired
+
+                                        </span>
+
+                                    @else
+
+                                        <span class="inline-flex
+                                                     items-center
+                                                     px-3 py-1
+                                                     rounded-full
+                                                     text-xs font-semibold
+                                                     bg-slate-100
+                                                     text-slate-600">
+
+                                            {{ ucfirst($session->status ?? 'Unknown') }}
+
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+
+                                <!-- ACTION -->
+
+                                <td class="px-6 py-4 text-right">
+
+                                    <a
+                                        href="{{ route('teacher.session', [
+                                            'session' => $session->id
+                                        ]) }}"
+                                        class="text-blue-600
+                                               hover:text-blue-800
+                                               font-medium
+                                               text-sm"
+                                    >
+
+                                        View
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        @else
+
+            <!-- EMPTY STATE -->
+
+            <div class="px-6 py-12 text-center">
+
+                <div class="text-4xl mb-4">
+                    📜
+                </div>
+
+                <h3 class="text-lg font-semibold text-slate-900">
+                    No session history
+                </h3>
+
+                <p class="mt-2 text-sm text-slate-500">
+                    Your completed teaching sessions will appear here.
+                </p>
+
+            </div>
+
+        @endif
 
     </div>
 

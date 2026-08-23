@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 
 class TeacherDashboardController extends Controller
 {
+    /**
+     * Teacher Dashboard
+     */
     public function index()
     {
         $user = Auth::user();
@@ -22,6 +25,7 @@ class TeacherDashboardController extends Controller
             abort(403, 'Data guru tidak ditemukan.');
         }
 
+        // Jadwal milik guru yang sedang login
         $schedules = Schedule::with([
             'classRoom',
             'subject'
@@ -30,6 +34,7 @@ class TeacherDashboardController extends Controller
         ->orderBy('start_time')
         ->get();
 
+        // Session yang sedang berlangsung
         $currentSession = ClassSession::with([
             'schedule.classRoom',
             'schedule.subject',
@@ -43,6 +48,7 @@ class TeacherDashboardController extends Controller
         ->latest('created_at')
         ->first();
 
+        // Semua session aktif milik guru
         $activeSessions = ClassSession::with([
             'schedule.classRoom',
             'schedule.subject',
@@ -63,6 +69,10 @@ class TeacherDashboardController extends Controller
         ));
     }
 
+
+    /**
+     * Current Session
+     */
     public function current()
     {
         $user = Auth::user();
@@ -96,7 +106,10 @@ class TeacherDashboardController extends Controller
                 ->with('error', 'Tidak ada session yang sedang berlangsung.');
         }
 
-        $students = $classSession->schedule->classRoom->students;
+        $students = $classSession
+            ->schedule
+            ->classRoom
+            ->students;
 
         return view('teacher.current-session', compact(
             'classSession',
@@ -104,29 +117,37 @@ class TeacherDashboardController extends Controller
         ));
     }
 
-    public function sessions()
-    {
-        $user = Auth::user();
 
-        if ($user->role !== 'guru') {
-            abort(403);
-        }
+    /**
+     * My Sessions
+     */
+  /**
+ * My Sessions
+ */
+public function sessions()
+{
+    $user = Auth::user();
 
-        $teacher = $user->teacher;
-
-        if (!$teacher) {
-            abort(403, 'Data guru tidak ditemukan.');
-        }
-
-        $sessions = ClassSession::with([
-            'schedule.classRoom',
-            'schedule.subject'
-        ])
-        ->where('teacher_id', $teacher->id)
-        ->latest('session_date')
-        ->latest('start_time')
-        ->get();
-
-        return view('teacher.session-history', compact('sessions'));
+    if ($user->role !== 'guru') {
+        abort(403);
     }
+
+    $teacher = $user->teacher;
+
+    if (!$teacher) {
+        abort(403, 'Data guru tidak ditemukan.');
+    }
+
+    $sessions = ClassSession::with([
+        'schedule.classRoom',
+        'schedule.subject',
+        'attendances'
+    ])
+    ->where('teacher_id', $teacher->id)
+    ->latest('session_date')
+    ->latest('start_time')
+    ->get();
+
+    return view('teacher.sessions', compact('sessions'));
+}
 }

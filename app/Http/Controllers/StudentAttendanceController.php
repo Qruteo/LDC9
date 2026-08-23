@@ -18,9 +18,9 @@ class StudentAttendanceController extends Controller
         }
 
         // Pastikan session masih aktif
-        if ($classSession->status !== 'ongoing') {
-            return back()->with('error', 'Session absensi sudah selesai.');
-        }
+       if (!$classSession->isActive()) {
+    return back()->with('error', 'Session sudah berakhir.');
+}
 
         // Pastikan siswa memang terdaftar di kelas tersebut
         $isStudent = $classSession->schedule

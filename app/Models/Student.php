@@ -18,22 +18,4 @@ class Student extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    public function siswa()
-{
-    if (strtolower(Auth::user()->role) !== 'admin') {
-        abort(403);
-    }
-
-    $students = Student::with([
-        'user',
-    ])->latest()->get();
-
-    $classes = \App\Models\ClassRoom::orderBy('name')->get();
-
-    return view('auth.admin.siswa.index', compact(
-        'students',
-        'classes'
-    ));
-}
 }

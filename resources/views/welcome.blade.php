@@ -66,6 +66,10 @@
             gap: 12px;
         }
 
+        .buttons a {
+            text-decoration: none;
+        }
+
         .btn {
             border: none;
             border-radius: 13px;
@@ -320,8 +324,8 @@
             <div class="brand">
                 <!-- Ganti dengan logo ClassSync milikmu -->
                 <img
-                    src="ClassSyncClearBG.png"
-                    alt="classysnc logo"
+                    src="{{ asset('images/classsync-logo.png') }}"
+                    alt="ClassSync"
                     class="logo"
                 >
 
@@ -330,15 +334,10 @@
                 </span>
             </div>
 
-            <a href="{{ route('login') }}"
-   class="px-6 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">
-    Login
-</a>
-
-<a href="{{ route('register') }}"
-   class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
-    Register
-</a>
+                        <nav class="buttons" aria-label="Autentikasi">
+                            <a href="{{ route('login') }}" class="btn btn-login">Login</a>
+                            <a href="{{ route('register') }}" class="btn btn-register">Register</a>
+                        </nav>
 
 
         </header>
@@ -400,8 +399,8 @@
                 <div class="image-box">
 
                     <img
-                        src="classroom.jpg"
-                        alt="Classroom"
+                        src="{{ asset('images/classroom.jpg') }}"
+                        alt="Suasana ruang kelas"
                         class="classroom-image"
                     >
 

@@ -143,7 +143,7 @@
                                 <td class="px-6 py-4 text-right">
 
                                     <a
-                                        href="{{ route('teacher.session', ['session' => $session->id]) }}"
+                                        href="{{ route('teacher.session', ['classSession' => $session->id]) }}"
                                         class="text-blue-600 hover:text-blue-800 font-medium text-sm"
                                     >
                                         View

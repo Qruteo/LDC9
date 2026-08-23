@@ -62,13 +62,27 @@ class TeacherScanController extends Controller
         // 2. CARI JADWAL GURU UNTUK KELAS TERSEBUT
         // =================================================
 
+        $dayMap = [
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+        ];
+        $todayIndo = $dayMap[now()->format('l')] ?? now()->format('l');
+
         $schedule = Schedule::with([
             'classRoom',
             'subject',
         ])
         ->where('teacher_id', $teacher->id)
         ->where('class_id', $classRoom->id)
-        ->where('day', now()->format('l'))
+        ->where(function ($query) use ($todayIndo) {
+            $query->where('day', $todayIndo)
+                  ->orWhere('day', now()->format('l'));
+        })
         ->first();
 
         if (!$schedule) {
@@ -151,7 +165,7 @@ class TeacherScanController extends Controller
 
             return redirect()
                 ->route('teacher.session', [
-                    'session' => $classSession->id,
+                    'classSession' => $classSession->id,
                 ]);
         }
 
@@ -178,7 +192,7 @@ class TeacherScanController extends Controller
 
         return redirect()
             ->route('teacher.session', [
-                'session' => $classSession->id,
+                'classSession' => $classSession->id,
             ]);
     }
 }

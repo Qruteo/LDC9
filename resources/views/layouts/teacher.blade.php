@@ -193,26 +193,6 @@
             </a>
 
 
-            <!-- SESSION HISTORY -->
-
-            <a
-                href="{{ route('teacher.session-history') }}"
-                class="sidebar-link
-                {{ request()->routeIs('teacher.session-history') ? 'active' : '' }}
-                flex items-center gap-4
-                px-4 py-3 rounded-lg">
-
-                <span class="text-xl">
-                    📜
-                </span>
-
-                <span class="font-medium">
-                    Session History
-                </span>
-
-            </a>
-
-
             <!-- PROFILE -->
 
             <a

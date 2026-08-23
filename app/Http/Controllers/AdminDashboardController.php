@@ -325,12 +325,57 @@ public function siswaDestroy(User $student)
     {
         $this->checkAdmin();
 
-        /*
-         * Jangan menebak field update guru.
-         * Gunakan implementasi guruUpdate yang sudah sesuai
-         * dengan form/database proyek kamu.
-         */
-        abort(501, 'Method guruUpdate belum diisi sesuai struktur form/database guru.');
+        $user = User::with('teacher')->findOrFail($teacher);
+        $teacherRecord = $user->teacher;
+
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email,' . $user->id,
+            ],
+            'password' => [
+                'nullable',
+                'string',
+                'min:6',
+            ],
+            'teacher_code' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:teachers,teacher_code,' . ($teacherRecord?->id ?? 'NULL'),
+            ],
+        ]);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        if (!empty($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
+        }
+
+        $user->save();
+
+        if ($teacherRecord) {
+            $teacherRecord->update([
+                'teacher_code' => $validated['teacher_code'],
+            ]);
+        } else {
+            Teacher::create([
+                'user_id' => $user->id,
+                'teacher_code' => $validated['teacher_code'],
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.guru')
+            ->with('success', 'Data guru berhasil diperbarui.');
     }
 
     public function guruDestroy($teacher)

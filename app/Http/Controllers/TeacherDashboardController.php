@@ -150,4 +150,22 @@ public function sessions()
 
     return view('teacher.sessions', compact('sessions'));
 }
+
+    public function attendance()
+    {
+        return view('teacher.attendance');
+    }
+
+    public function schedule()
+    {
+        $user = Auth::user();
+        $teacher = $user?->teacher;
+
+        $schedules = Schedule::with(['classRoom', 'subject'])
+            ->where('teacher_id', $teacher?->id)
+            ->orderBy('start_time')
+            ->get();
+
+        return view('teacher.schedule', compact('schedules'));
+    }
 }

@@ -89,8 +89,8 @@ class TeacherSessionController extends Controller
         // Validasi data absensi
         $validated = $request->validate([
             'student_id' => 'required|exists:users,id',
-            'status' => 'required|in:present,late,absent',
-            'notes' => 'nullable|string',
+            'status'     => 'required|in:hadir,present,izin,sakit,alfa,late,absent',
+            'notes'      => 'nullable|string',
         ]);
 
         // Pastikan siswa memang berada di kelas session
@@ -184,5 +184,77 @@ class TeacherSessionController extends Controller
                 'success',
                 'Session berhasil diselesaikan.'
             );
+    }
+
+    /**
+     * Export absensi sesi ke CSV — menyertakan seluruh siswa di kelas,
+     * termasuk yang belum absen (ditampilkan sebagai "Belum Absen").
+     */
+    public function export(ClassSession $classSession)
+    {
+        $user = Auth::user();
+
+        if (!$user || $user->role !== 'guru') {
+            abort(403);
+        }
+
+        if (!$classSession->teacher || $classSession->teacher->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke session ini.');
+        }
+
+        $classSession->load(['schedule.classRoom.students', 'schedule.subject', 'attendances']);
+
+        // Semua siswa yang terdaftar di kelas
+        $allStudents = $classSession->schedule?->classRoom?->students ?? collect();
+
+        // Map attendance by student_id untuk lookup cepat
+        $attendanceMap = $classSession->attendances->keyBy('student_id');
+
+        $subjectName = $classSession->schedule?->subject?->name ?? '-';
+        $className   = $classSession->schedule?->classRoom?->name ?? 'Kelas';
+        $filename    = 'absensi-' . \Illuminate\Support\Str::slug($className) . '-' . now()->format('Y-m-d') . '.csv';
+
+        return response()->streamDownload(function () use ($allStudents, $attendanceMap, $subjectName, $className) {
+            $handle = fopen('php://output', 'w');
+
+            // Header meta info
+            fputcsv($handle, ['Rekap Absensi Sesi']);
+            fputcsv($handle, ['Kelas', $className]);
+            fputcsv($handle, ['Mata Pelajaran', $subjectName]);
+            fputcsv($handle, ['Tanggal Export', now()->format('d/m/Y H:i')]);
+            fputcsv($handle, []);
+
+            // Header kolom tabel
+            fputcsv($handle, ['No', 'Nama Siswa', 'NIS', 'Status', 'Waktu Presensi', 'Catatan']);
+
+            foreach ($allStudents as $index => $student) {
+                $att = $attendanceMap->get($student->id);
+
+                $statusLabel = match ($att?->status ?? null) {
+                    'hadir'  => 'Hadir',
+                    'present' => 'Hadir',
+                    'izin'   => 'Izin',
+                    'sakit'  => 'Sakit',
+                    'alfa'   => 'Alfa',
+                    'late'   => 'Terlambat',
+                    'absent' => 'Alfa',
+                    default  => 'Belum Absen',
+                };
+
+                fputcsv($handle, [
+                    $index + 1,
+                    $student->name ?? '-',
+                    $student->nis ?? '-',
+                    $statusLabel,
+                    $att?->attendance_time?->format('d/m/Y H:i') ?? '-',
+                    $att?->notes ?? '-',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }

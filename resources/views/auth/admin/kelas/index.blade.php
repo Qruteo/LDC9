@@ -162,14 +162,19 @@
 
 
                             <td class="px-6 py-4">
-
-                                <code
-                                    class="text-xs bg-gray-100
-                                           px-2 py-1 rounded"
-                                >
-                                    {{ $class->qr_token }}
-                                </code>
-
+                                <div class="flex items-center gap-2">
+                                    <code class="text-xs bg-gray-100 px-2 py-1 rounded font-mono font-bold text-gray-800">
+                                        {{ $class->qr_token }}
+                                    </code>
+                                    <a
+                                        href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode($class->qr_token) }}"
+                                        target="_blank"
+                                        title="Buka QR Code Image"
+                                        class="px-2 py-1 text-xs bg-emerald-100 text-emerald-700 font-semibold rounded hover:bg-emerald-200 transition"
+                                    >
+                                        📷 QR Code
+                                    </a>
+                                </div>
                             </td>
 
 

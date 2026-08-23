@@ -14,8 +14,8 @@
                 </p>
             </div>
 
-            <a href="{{ route('admin.export') }}" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg">
-                📊 Export Data
+            <a href="{{ route('admin.absensi.export') }}" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition">
+                📊 Export Rekap Absensi
             </a>
         </div>
 

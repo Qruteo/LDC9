@@ -1,228 +1,384 @@
 <?php
 
-use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\TeacherDashboardController;
-use App\Http\Controllers\TeacherSessionController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TeacherScanController;
-use App\Http\Controllers\StudentDashboardController;
-use App\Http\Controllers\StudentAttendanceController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AttendanceExportController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\TeacherScanController;
+use App\Http\Controllers\TeacherSessionController;
+use App\Http\Controllers\TeacherSessionHistoryController;
+
+/*
+|--------------------------------------------------------------------------
+| HOME
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-
-// =========================
-// DASHBOARD UTAMA
-// =========================
-
-Route::get('/dashboard', function () {
-    return redirect()->route('teacher.dashboard');
-})->middleware('auth')->name('dashboard');
-
-Route::get('/teacher/attendance', function () {
-    return view('teacher.attendance');
-})->middleware('auth')->name('teacher.attendance');
-
-Route::get('/teacher/schedule', function () {
-    return view('teacher.schedule');
-})->middleware('auth')->name('teacher.schedule');
-
-Route::get('/teacher/profile', function () {
-    return view('teacher.profile');
-})->middleware('auth')->name('teacher.profile');
-
-
-// =========================
-// AUTHENTICATED ROUTES
-// =========================
-
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware('auth')->name('admin.dashboard');
-
-Route::get('/admin/qr-scanning', function () {
-    return view('admin.qr-scanning.index');
-})->middleware('auth')->name('admin.qr-scanning');
-
-Route::get('/admin/sesi', function () {
-    return view('admin.sesi.index');
-})->middleware('auth')->name('admin.sesi');
-
-Route::get('/admin/riwayat', function () {
-    return view('admin.riwayat.index');
-})->middleware('auth')->name('admin.riwayat');
-
-Route::get('/admin/export-data', function () {
-    return view('admin.export-data.index');
-})->middleware('auth')->name('admin.export-data');
-
-Route::get('/admin/riwayat-siswa', function () {
-    return view('admin.riwayat-siswa.index');
-})->middleware('auth')->name('admin.riwayat-siswa');
+})->name('home');
 
 
 /*
 |--------------------------------------------------------------------------
-| Admin
+| LOGIN
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->prefix('admin')->group(function () {
+Route::get('/login', [LoginController::class, 'showLogin'])
+    ->name('login');
 
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
-        ->name('admin.dashboard');
-
-    Route::get('/siswa', [AdminDashboardController::class, 'siswa'])
-        ->name('admin.siswa');
-
-    Route::get('/guru', [AdminDashboardController::class, 'guru'])
-        ->name('admin.guru');
-
-    Route::get('/kelas', [AdminDashboardController::class, 'kelas'])
-        ->name('admin.kelas');
-
-    Route::get('/mata-pelajaran', [AdminDashboardController::class, 'mataPelajaran'])
-        ->name('admin.mata-pelajaran');
-
-    Route::get('/jadwal', [AdminDashboardController::class, 'jadwal'])
-        ->name('admin.jadwal');
-
-    Route::get('/absensi', [AdminDashboardController::class, 'absensi'])
-        ->name('admin.absensi');
-});
+Route::post('/login', [LoginController::class, 'login'])
+    ->name('login.process');
 
 
 /*
 |--------------------------------------------------------------------------
-| Profile
+| REGISTER
+|--------------------------------------------------------------------------
+|
+| Dibutuhkan oleh welcome.blade.php karena ada route('register')
+|
+*/
+
+Route::get('/register', function () {
+    return redirect()->route('login');
+})->name('register');
+
+
+/*
+|--------------------------------------------------------------------------
+| LOGOUT
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
-
-    // =========================
-    // TEACHER DASHBOARD
-    // =========================
-
-    Route::get('/teacher/dashboard', [
-        TeacherDashboardController::class,
-        'index'
-    ])->name('teacher.dashboard');
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
 
 
-    // =========================
-    // CURRENT SESSION
-    // =========================
+/*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
 
-    Route::get('/teacher/current', [
-        TeacherDashboardController::class,
-        'current'
-    ])->name('teacher.current');
+Route::middleware(['auth'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
+        // Dashboard Admin
+        Route::get('/', [
+            AdminDashboardController::class,
+            'index'
+        ])->name('dashboard');
 
-    // =========================
-    // SESSION HISTORY
-    // =========================
-
-    Route::get('/teacher/sessions', [
-        TeacherDashboardController::class,
-        'sessions'
-    ])->name('teacher.sessions');
-
-
-    // =========================
-    // SESSION DETAIL
-    // =========================
-
-    Route::get('/teacher/session', function () {
-
-    $sessionId = request('session');
-
-    $classSession = \App\Models\ClassSession::with([
-        'schedule.classRoom.students',
-        'schedule.subject',
-        'teacher',
-        'attendances'
-    ])->findOrFail($sessionId);
-
-    $students = $classSession->schedule->classRoom->students;
-
-    return view('teacher.current-session', compact(
-        'classSession',
-        'students'
-    ));
-
-})->name('teacher.session');
-
-    // =========================
-    // QR SCANNER
-    // =========================
-
-    Route::get('/teacher/scan', [
-        TeacherScanController::class,
-        'scan'
-    ])->name('teacher.scan');
-
-    Route::post('/teacher/scan/validate', [
-        TeacherScanController::class,
-        'validateQr'
-    ])->name('teacher.scan.validate');
+        Route::get('/dashboard', [
+            AdminDashboardController::class,
+            'index'
+        ])->name('dashboard.alt');
 
 
-    // =========================
-    // PROFILE
-    // =========================
+        /*
+        |--------------------------------------------------------------------------
+        | SISWA
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get('/profile', [
-        ProfileController::class,
-        'edit'
-    ])->name('profile.edit');
+        Route::get('/siswa', [
+            AdminDashboardController::class,
+            'siswa'
+        ])->name('siswa');
 
-    Route::patch('/profile', [
-        ProfileController::class,
-        'update'
-    ])->name('profile.update');
+        Route::get('/siswa/create', [
+            AdminDashboardController::class,
+            'siswaCreate'
+        ])->name('siswa.create');
 
-    Route::delete('/profile', [
-        ProfileController::class,
-        'destroy'
-    ])->name('profile.destroy');
+        Route::post('/siswa', [
+            AdminDashboardController::class,
+            'siswaStore'
+        ])->name('siswa.store');
 
+        Route::get('/siswa/{student}/edit', [
+            AdminDashboardController::class,
+            'siswaEdit'
+        ])->name('siswa.edit');
 
-    // =========================
-    // STUDENT
-    // =========================
+        Route::put('/siswa/{student}', [
+            AdminDashboardController::class,
+            'siswaUpdate'
+        ])->name('siswa.update');
 
-    Route::get('/student/dashboard', [
-        StudentDashboardController::class,
-        'index'
-    ])->name('student.dashboard');
-
-    Route::post('/student/attendance/{classSession}', [
-        StudentAttendanceController::class,
-        'store'
-    ])->name('student.attendance.store');
-
-    Route::get('/teacher/session/{classSession}/export', [
-    AttendanceExportController::class,
-    'export'
-])->name('teacher.session.export');
-
-    // Session History
-    Route::get('/teacher/session-history', [
-        \App\Http\Controllers\TeacherDashboardController::class,
-        'sessions'
-    ])->name('teacher.session-history');
-
-});
+        Route::delete('/siswa/{student}', [
+            AdminDashboardController::class,
+            'siswaDestroy'
+        ])->name('siswa.destroy');
 
 
-require __DIR__.'/auth.php';
+        /*
+        |--------------------------------------------------------------------------
+        | GURU
+        |--------------------------------------------------------------------------
+        */
 
-Route::get('/admin/export', [\App\Http\Controllers\AdminExportController::class, 'export'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.export');
+        Route::get('/guru', [
+            AdminDashboardController::class,
+            'guru'
+        ])->name('guru');
+
+        Route::get('/guru/create', [
+            AdminDashboardController::class,
+            'guruCreate'
+        ])->name('guru.create');
+
+        Route::post('/guru', [
+            AdminDashboardController::class,
+            'guruStore'
+        ])->name('guru.store');
+
+        Route::get('/guru/{teacher}/edit', [
+            AdminDashboardController::class,
+            'guruEdit'
+        ])->name('guru.edit');
+
+        Route::put('/guru/{teacher}', [
+            AdminDashboardController::class,
+            'guruUpdate'
+        ])->name('guru.update');
+
+        Route::delete('/guru/{teacher}', [
+            AdminDashboardController::class,
+            'guruDestroy'
+        ])->name('guru.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | KELAS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/kelas', [
+            AdminDashboardController::class,
+            'kelas'
+        ])->name('kelas');
+
+        Route::get('/kelas/create', [
+            AdminDashboardController::class,
+            'kelasCreate'
+        ])->name('kelas.create');
+
+        Route::post('/kelas', [
+            AdminDashboardController::class,
+            'kelasStore'
+        ])->name('kelas.store');
+
+        Route::get('/kelas/{classRoom}/edit', [
+            AdminDashboardController::class,
+            'kelasEdit'
+        ])->name('kelas.edit');
+
+        Route::put('/kelas/{classRoom}', [
+            AdminDashboardController::class,
+            'kelasUpdate'
+        ])->name('kelas.update');
+
+        Route::delete('/kelas/{classRoom}', [
+            AdminDashboardController::class,
+            'kelasDestroy'
+        ])->name('kelas.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SISWA DALAM KELAS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/kelas/{classRoom}/students', [
+            AdminDashboardController::class,
+            'kelasStudents'
+        ])->name('kelas.students');
+
+        Route::post('/kelas/{classRoom}/students', [
+            AdminDashboardController::class,
+            'kelasStudentStore'
+        ])->name('kelas.students.store');
+
+        Route::delete('/kelas/{classRoom}/students/{student}', [
+            AdminDashboardController::class,
+            'kelasStudentDestroy'
+        ])->name('kelas.students.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MATA PELAJARAN
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/mata-pelajaran', [
+            AdminDashboardController::class,
+            'mataPelajaran'
+        ])->name('mata-pelajaran');
+
+        Route::get('/mata-pelajaran/create', [
+            AdminDashboardController::class,
+            'mataPelajaranCreate'
+        ])->name('mata-pelajaran.create');
+
+        Route::post('/mata-pelajaran', [
+            AdminDashboardController::class,
+            'mataPelajaranStore'
+        ])->name('mata-pelajaran.store');
+
+        Route::get('/mata-pelajaran/{subject}/edit', [
+            AdminDashboardController::class,
+            'mataPelajaranEdit'
+        ])->name('mata-pelajaran.edit');
+
+        Route::put('/mata-pelajaran/{subject}', [
+            AdminDashboardController::class,
+            'mataPelajaranUpdate'
+        ])->name('mata-pelajaran.update');
+
+        Route::delete('/mata-pelajaran/{subject}', [
+            AdminDashboardController::class,
+            'mataPelajaranDestroy'
+        ])->name('mata-pelajaran.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | JADWAL
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/jadwal', [
+            AdminDashboardController::class,
+            'jadwal'
+        ])->name('jadwal');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ABSENSI
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/absensi', [
+            AdminDashboardController::class,
+            'absensi'
+        ])->name('absensi');
+
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| TEACHER / GURU
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])
+    ->prefix('teacher')
+    ->name('teacher.')
+    ->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/dashboard', [
+            TeacherDashboardController::class,
+            'index'
+        ])->name('dashboard');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SCAN QR
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/scan', [
+            TeacherScanController::class,
+            'scan'
+        ])->name('scan');
+
+        Route::post('/scan/validate', [
+            TeacherScanController::class,
+            'validateQr'
+        ])->name('scan.validate');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENT SESSION
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/session/{session}', [
+            TeacherSessionController::class,
+            'show'
+        ])->name('session');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SESSION HISTORY
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/session-history', [
+            TeacherSessionHistoryController::class,
+            'index'
+        ])->name('session-history');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MY SESSIONS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/sessions', [
+            TeacherDashboardController::class,
+            'sessions'
+        ])->name('sessions');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENT SESSION PAGE
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/current-session', [
+            TeacherDashboardController::class,
+            'current'
+        ])->name('current-session');
+
+    });
+
+
+
+/*
+|--------------------------------------------------------------------------
+| STUDENT / SISWA
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])
+    ->prefix('student')
+    ->name('student.')
+    ->group(function () {
+
+        Route::get('/dashboard', function () {
+            return view('auth.siswa.dashboard');
+        })->name('dashboard');
+
+    });

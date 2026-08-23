@@ -34,9 +34,9 @@
                         Total Siswa
                     </p>
 
-                    <h3 class="text-3xl font-bold text-gray-900 mt-2">
-                        0
-                    </h3>
+                    <p class="text-3xl font-bold">
+    {{ $totalSiswa }}
+</p>
 
                     <p class="text-xs text-green-600 mt-2">
                         Data siswa terdaftar
@@ -66,9 +66,9 @@
                         Total Guru
                     </p>
 
-                    <h3 class="text-3xl font-bold text-gray-900 mt-2">
-                        0
-                    </h3>
+                    <p class="text-3xl font-bold">
+    {{ $totalGuru }}
+</p>
 
                     <p class="text-xs text-green-600 mt-2">
                         Guru aktif
@@ -98,9 +98,9 @@
                         Total Kelas
                     </p>
 
-                    <h3 class="text-3xl font-bold text-gray-900 mt-2">
-                        0
-                    </h3>
+                   <p class="text-3xl font-bold">
+    {{ $totalKelas }}
+</p>
 
                     <p class="text-xs text-green-600 mt-2">
                         Kelas aktif
@@ -130,9 +130,9 @@
                         Mata Pelajaran
                     </p>
 
-                    <h3 class="text-3xl font-bold text-gray-900 mt-2">
-                        0
-                    </h3>
+                    <p class="text-3xl font-bold">
+    {{ $totalMataPelajaran }}
+</p>
 
                     <p class="text-xs text-green-600 mt-2">
                         Mata pelajaran tersedia

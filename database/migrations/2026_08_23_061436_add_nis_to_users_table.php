@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('siswa')->after('password');
+            $table->string('nis', 50)
+                ->nullable()
+                ->unique()
+                ->after('email');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
+            $table->dropUnique(['nis']);
+            $table->dropColumn('nis');
         });
     }
 };

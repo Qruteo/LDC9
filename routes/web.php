@@ -212,53 +212,11 @@ Route::middleware('auth')->group(function () {
     'export'
 ])->name('teacher.session.export');
 
-Route::middleware(['auth'])->group(function () {
-
-    // Dashboard
-    Route::get('/teacher/dashboard', [
-        \App\Http\Controllers\TeacherDashboardController::class,
-        'index'
-    ])->name('teacher.dashboard');
-
-
-    // Scan Class QR
-    Route::get('/teacher/scan', [
-        \App\Http\Controllers\TeacherScanController::class,
-        'scan'
-    ])->name('teacher.scan');
-
-
-    // My Sessions
-    Route::get('/teacher/sessions', [
+    // Session History
+    Route::get('/teacher/session-history', [
         \App\Http\Controllers\TeacherDashboardController::class,
         'sessions'
-    ])->name('teacher.sessions');
-
-
-    // My Attendance
-    Route::get('/teacher/attendance', function () {
-        return view('teacher.attendance');
-    })->name('teacher.attendance');
-
-
-    // Schedule
-    Route::get('/teacher/schedule', function () {
-        return view('teacher.schedule');
-    })->name('teacher.schedule');
-
-
-    // Session History
-    Route::get('/teacher/session-history', function () {
-        return view('teacher.session-history');
-    })->name('teacher.session-history');
-
-
-    // Profile
-    Route::get('/teacher/profile', function () {
-        return view('teacher.profile');
-    })->name('teacher.profile');
-
-});
+    ])->name('teacher.session-history');
 
 });
 

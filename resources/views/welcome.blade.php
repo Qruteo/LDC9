@@ -97,7 +97,7 @@
                         class="absolute bottom-3.5 left-3.5 right-3.5 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-white/80 shadow-md flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div
-                                class="w-9 h-9 btn-blue-attendfy text-white rounded-lg flex items-center justify-center font-bold text-xs shadow-sm">
+                                class="w-9 h-9 btn-blue-classsync text-white rounded-lg flex items-center justify-center font-bold text-xs shadow-sm">
                                 QR
                             </div>
                             <div>
@@ -114,8 +114,6 @@
             </div>
 
         </div>
-
-    </main>
 
 </body>
 
